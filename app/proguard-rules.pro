@@ -1,0 +1,3 @@
+-keep class com.yausername.** { *; }
+-keep class com.chaquo.** { *; }
+-dontwarn org.apache.commons.compress.**
