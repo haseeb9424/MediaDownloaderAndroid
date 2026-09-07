@@ -2,53 +2,228 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0c0f">
 <title>Media Downloader</title>
 <style>
-:root{--bg:#0b0d10;--panel:#12161b;--panel2:#171c22;--line:#252c35;--text:#f4f6f8;--muted:#8d98a5;--accent:#5b8cff;--accent2:#76a0ff;--danger:#ff6b73;--ok:#48c78e;--warn:#f0b35a;--r:14px}*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif}body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow:hidden}.app{height:100vh;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto}.top{padding:18px 18px 12px;border-bottom:1px solid var(--line);background:rgba(11,13,16,.96)}.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}.brand-main{display:flex;align-items:center;gap:11px}.mark{width:36px;height:36px;border-radius:11px;background:var(--accent);display:grid;place-items:center;font-weight:800}.brand strong{font-size:15px;display:block}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.engine{font-size:10px;color:var(--muted);max-width:42%;text-align:right}.engine.ready{color:var(--ok)}.engine.error{color:var(--danger)}.content{overflow:auto;padding:20px 16px 120px}.page{display:none;max-width:760px;margin:0 auto}.page.active{display:block}.eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:750}.title{font-size:26px;font-weight:700;letter-spacing:-.035em;margin:6px 0 6px}.sub{font-size:13px;line-height:1.55;color:var(--muted);margin:0 0 22px}.stack{display:grid;gap:16px}.field label{display:block;font-size:11px;font-weight:650;color:#c6cdd5;margin:0 0 7px}.control{width:100%;height:46px;border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:0 13px;color:var(--text);font:inherit;outline:none}.control:focus{border-color:var(--accent)}textarea.control{height:auto;min-height:72px;padding-top:12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid var(--line);background:var(--panel);border-radius:var(--r);padding:15px}.row{display:flex;align-items:center;justify-content:space-between;gap:14px}.switch{width:42px;height:24px;position:relative}.switch input{display:none}.track{position:absolute;inset:0;background:#272e37;border:1px solid #343d48;border-radius:999px}.track:after{content:"";width:17px;height:17px;background:#aab2bb;position:absolute;left:2px;top:2px;border-radius:50%;transition:.18s}.switch input:checked+.track{background:var(--accent);border-color:var(--accent)}.switch input:checked+.track:after{transform:translateX(18px);background:white}.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line);background:#0f1216;padding:3px;border-radius:10px;gap:3px}.seg button{height:34px;border:0;background:transparent;color:var(--muted);border-radius:7px;font:inherit;font-size:12px;font-weight:650}.seg button.active{background:var(--panel2);color:var(--text)}.trim{display:none}.trim.visible{display:grid;gap:12px}.primary,.secondary,.ghost{height:46px;border-radius:11px;border:1px solid transparent;padding:0 16px;font:inherit;font-weight:700;color:white}.primary{background:var(--accent)}.secondary{background:var(--panel2);border-color:var(--line);color:var(--text)}.ghost{background:transparent;border-color:var(--line);color:var(--muted)}button:disabled{opacity:.45}.message{display:none;padding:11px 12px;border-radius:10px;font-size:12px;line-height:1.45}.message.show{display:block}.message.error{color:#ffc0c4;background:rgba(255,107,115,.1);border:1px solid rgba(255,107,115,.22)}.message.info{color:#cbd8ff;background:rgba(91,140,255,.1);border:1px solid rgba(91,140,255,.2)}.playlist-empty{text-align:center;padding:34px 18px;border:1px dashed var(--line);border-radius:var(--r);color:var(--muted);font-size:12px}.playlist-head{display:none;margin-top:18px}.playlist-head.visible{display:block}.plist-summary{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:12px}.plist-summary strong{display:block;font-size:15px;max-width:65%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.plist-summary span{font-size:11px;color:var(--muted)}.plist-actions{display:flex;gap:7px}.tiny{height:32px;padding:0 10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);border-radius:8px;font-size:11px}.plist{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}.pitem{padding:13px;border-top:1px solid var(--line)}.pitem:first-child{border-top:0}.pitem.skipped{opacity:.5}.pbase{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center}.num{font-size:11px;color:var(--muted)}.ptitle{font-size:12px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pmode{display:flex;gap:4px}.pmode button{height:30px;padding:0 8px;border:1px solid var(--line);background:#0f1216;color:var(--muted);border-radius:7px;font-size:10px}.pmode button.active{background:var(--accent);border-color:var(--accent);color:#fff}.ptrim{display:none;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0 38px}.ptrim.visible{display:grid}.ptrim .control{height:38px;font-size:12px}.playlist-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}.playlist-footer span{font-size:11px;color:var(--muted)}.activity{display:none;border-top:1px solid var(--line);background:#0f1216;padding:10px 14px}.activity.show{display:block}.activity-top{display:flex;align-items:center;justify-content:space-between;gap:12px}.activity-copy{min-width:0}.activity-copy strong{font-size:11px;display:block}.activity-copy span{font-size:10px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.percent{font-size:12px;font-weight:750;font-variant-numeric:tabular-nums}.bar{height:5px;background:#252c35;border-radius:999px;overflow:hidden;margin-top:8px}.fill{height:100%;width:0;background:var(--accent);transition:width .2s}.activity-buttons{display:flex;gap:7px;margin-top:8px}.activity-buttons button{height:30px;font-size:10px;padding:0 10px}.nav{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);background:#0f1216;padding:7px 10px calc(7px + env(safe-area-inset-bottom));gap:6px}.nav button{height:48px;border:0;background:transparent;border-radius:10px;color:var(--muted);font:inherit;font-size:11px;font-weight:650}.nav button.active{background:rgba(91,140,255,.12);color:#dfe8ff}.nav b{font-size:18px;display:block;line-height:17px;margin-bottom:3px}@media(min-width:720px){body{display:grid;place-items:center}.app{width:100%;max-width:900px;border-left:1px solid var(--line);border-right:1px solid var(--line)}.content{padding-left:30px;padding-right:30px}.nav{grid-template-columns:180px 180px;justify-content:center}.grid2{grid-template-columns:1fr 1fr}.ptitle{font-size:13px}}
+:root{
+  --bg:#0a0c0f;--surface:#11151a;--surface2:#171c23;--surface3:#1d232c;
+  --line:#252c36;--line2:#303946;--text:#f5f7fa;--muted:#929daa;
+  --accent:#6d8cff;--accent-soft:rgba(109,140,255,.14);--ok:#55d69e;
+  --danger:#ff737d;--warning:#f4bd68;--radius:18px;--nav-h:70px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;background:var(--bg);color:var(--text);font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif}
+body{overflow:hidden;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;background:var(--bg)}
+
+/* Header */
+.topbar{height:64px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:rgba(10,12,15,.97)}
+.identity{display:flex;align-items:center;gap:11px;min-width:0}
+.logo{width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,#718fff,#536ee9);display:grid;place-items:center;font-size:21px;font-weight:800;box-shadow:0 6px 18px rgba(74,105,220,.2)}
+.identity-text{min-width:0}.identity strong{display:block;font-size:15px;line-height:1.15;white-space:nowrap}.identity small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.engine-pill{max-width:46%;height:32px;padding:0 10px;border:1px solid var(--line);background:var(--surface);border-radius:999px;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden}
+.engine-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--warning);flex:0 0 auto}.engine-pill.ready .dot{background:var(--ok)}.engine-pill.error .dot{background:var(--danger)}
+.engine-pill span:last-child{overflow:hidden;text-overflow:ellipsis}
+
+/* Main */
+.content{overflow-y:auto;overscroll-behavior:contain;padding:20px 15px 30px;scrollbar-width:none}.content::-webkit-scrollbar{display:none}
+.page{display:none;max-width:560px;margin:0 auto}.page.active{display:block}
+.page-head{margin-bottom:20px}.kicker{font-size:11px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:#91a7ff}.page-title{margin:5px 0 6px;font-size:29px;line-height:1.08;letter-spacing:-.035em}.page-sub{margin:0;color:var(--muted);font-size:13px;line-height:1.5;max-width:38em}
+.section{display:grid;gap:14px;margin-bottom:18px}.section-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:15px}
+.label{display:block;margin-bottom:8px;color:#cbd2da;font-size:12px;font-weight:700}
+.help{font-size:11px;line-height:1.45;color:var(--muted)}
+.control{width:100%;height:54px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:0 14px;outline:none;font-size:16px;appearance:none}
+.control:focus{border-color:#607fed;box-shadow:0 0 0 3px rgba(96,127,237,.1)}
+select.control{padding-right:38px;background-image:linear-gradient(45deg,transparent 50%,#8e99a5 50%),linear-gradient(135deg,#8e99a5 50%,transparent 50%);background-position:calc(100% - 19px) 23px,calc(100% - 14px) 23px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.url-wrap{position:relative}.url-wrap .control{padding-right:48px}.clear-url{position:absolute;right:7px;top:7px;width:40px;height:40px;border:0;border-radius:11px;background:var(--surface2);color:var(--muted);font-size:18px}
+
+/* Format selector */
+.format-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:4px;background:#0d1014;border:1px solid var(--line);border-radius:15px}
+.format-tabs button{height:46px;border:0;border-radius:11px;background:transparent;color:var(--muted);font-weight:750;font-size:13px;display:flex;align-items:center;justify-content:center;gap:7px}
+.format-tabs button.active{background:var(--surface2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line2)}
+.format-icon{font-size:17px}
+.hidden-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.quality-row{display:grid;grid-template-columns:1fr;gap:12px;margin-top:13px}
+
+/* Trim */
+.trim-head{display:flex;align-items:center;justify-content:space-between;gap:14px}.trim-copy strong{display:block;font-size:14px}.trim-copy span{display:block;margin-top:3px;color:var(--muted);font-size:11px;line-height:1.35}
+.switch{width:48px;height:28px;position:relative;flex:0 0 auto}.switch input{display:none}.track{position:absolute;inset:0;border-radius:999px;background:#262d36;border:1px solid #343e49;transition:.18s}.track:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#aab3bd;transition:.18s}.switch input:checked+.track{background:var(--accent);border-color:var(--accent)}.switch input:checked+.track:after{transform:translateX(19px);background:#fff}
+.trim-box{display:none;padding-top:15px;margin-top:15px;border-top:1px solid var(--line);gap:14px}.trim-box.visible{display:grid}
+.time-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.time-grid .control{height:50px}
+.segment{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:#0d1014;border:1px solid var(--line);border-radius:13px}.segment button{height:42px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:12px;font-weight:750}.segment button.active{background:var(--surface2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line2)}
+
+/* Buttons/messages */
+.primary,.secondary,.ghost{width:100%;height:54px;border-radius:14px;font-weight:800;border:1px solid transparent;font-size:14px}.primary{background:linear-gradient(145deg,#708eff,#5c78ec);color:white;box-shadow:0 7px 20px rgba(75,103,214,.2)}.secondary{background:var(--surface2);border-color:var(--line);color:var(--text)}.ghost{background:transparent;border-color:var(--line);color:var(--muted)}button:disabled{opacity:.42;cursor:not-allowed}
+.message{display:none;padding:12px 13px;border-radius:12px;font-size:12px;line-height:1.45;margin-top:10px}.message.show{display:block}.message.error{color:#ffc6ca;background:rgba(255,115,125,.10);border:1px solid rgba(255,115,125,.22)}.message.info{color:#d4dcff;background:rgba(109,140,255,.10);border:1px solid rgba(109,140,255,.20)}
+
+/* Playlist */
+.playlist-empty{padding:30px 18px;text-align:center;background:var(--surface);border:1px dashed var(--line2);border-radius:var(--radius);color:var(--muted);font-size:12px;line-height:1.5}.empty-icon{font-size:28px;opacity:.65;margin-bottom:8px}
+.playlist-head{display:none}.playlist-head.visible{display:block}
+.playlist-summary{padding:14px 15px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px}.playlist-summary-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.playlist-summary-title{min-width:0}.playlist-summary-title strong{display:block;font-size:14px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playlist-summary-title span{display:block;font-size:11px;color:var(--muted);margin-top:3px}.bulk-actions{display:flex;gap:6px;flex:0 0 auto}.tiny{height:32px;padding:0 9px;border-radius:9px;border:1px solid var(--line);background:var(--surface2);color:#b8c1cb;font-size:10px;font-weight:700}
+.playlist-list{display:grid;gap:9px}.pitem{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:13px;transition:opacity .15s}.pitem.skipped{opacity:.48}.pitem-head{display:grid;grid-template-columns:30px minmax(0,1fr);gap:10px;align-items:start}.num{height:28px;border-radius:9px;background:var(--surface2);display:grid;place-items:center;color:var(--muted);font-size:10px;font-weight:800}.ptitle{font-size:13px;font-weight:700;line-height:1.35;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;padding-top:4px}
+.pmode{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:11px;padding:4px;background:#0d1014;border:1px solid var(--line);border-radius:12px}.pmode button{height:38px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:11px;font-weight:750}.pmode button.active{background:var(--surface3);color:var(--text)}.pmode button[data-mode="trim"].active{background:var(--accent);color:white}.pmode button[data-mode="skip"].active{background:rgba(255,115,125,.14);color:#ffb4ba}
+.ptrim{display:none;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.ptrim.visible{display:grid}.ptrim .control{height:46px;font-size:14px;padding:0 11px}
+.playlist-options{display:grid;gap:10px;margin-top:12px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}.playlist-selected{font-size:12px;font-weight:700;color:#c9d1d9}.playlist-selected span{color:var(--muted);font-weight:500}
+.sticky-cta{position:sticky;bottom:0;z-index:4;padding:12px 0 4px;background:linear-gradient(to bottom,rgba(10,12,15,0),var(--bg) 24%)}
+
+/* Activity bar */
+.activity{display:none;padding:11px 14px 12px;border-top:1px solid var(--line);background:#0e1115}.activity.show{display:block}.activity-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}.activity-copy{min-width:0}.activity-copy strong{display:block;font-size:12px;line-height:1.2}.activity-copy span{display:block;margin-top:3px;color:var(--muted);font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.percent{font-size:12px;font-weight:850;font-variant-numeric:tabular-nums}.bar{height:6px;margin-top:9px;border-radius:999px;overflow:hidden;background:#252d36}.fill{height:100%;width:0;background:linear-gradient(90deg,#6582f2,#7e9bff);transition:width .2s}.activity-actions{display:flex;gap:7px;margin-top:9px}.activity-actions button{width:auto;height:34px;padding:0 12px;font-size:10px;border-radius:10px}
+
+/* Bottom navigation */
+.bottom-nav{height:var(--nav-h);display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px calc(6px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#0e1115}.bottom-nav button{border:0;border-radius:13px;background:transparent;color:var(--muted);font-size:10px;font-weight:750;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.bottom-nav button.active{background:var(--accent-soft);color:#dce4ff}.nav-icon{font-size:20px;line-height:20px}
+
+@media(max-width:360px){.content{padding-left:12px;padding-right:12px}.page-title{font-size:26px}.time-grid,.ptrim{grid-template-columns:1fr}.engine-pill{max-width:42%;padding:0 8px}.bulk-actions{flex-direction:column}.playlist-summary-top{align-items:center}}
+@media(min-width:600px){.content{padding-left:28px;padding-right:28px}.page{max-width:620px}.quality-row{grid-template-columns:1fr}.playlist-list{grid-template-columns:1fr}.page-title{font-size:32px}}
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="brand"><div class="brand-main"><div class="mark">↓</div><div><strong>Media Downloader</strong><small>Android beta</small></div></div><div id="engine" class="engine">Starting downloader engine…</div></div></header>
+  <header class="topbar">
+    <div class="identity">
+      <div class="logo">↓</div>
+      <div class="identity-text"><strong>Media Downloader</strong><small>Android · ARM64</small></div>
+    </div>
+    <div id="engine" class="engine-pill"><span class="dot"></span><span>Starting engine…</span></div>
+  </header>
 
   <main class="content">
     <section id="download-page" class="page active">
-      <div class="eyebrow">Single media</div><h1 class="title">Download</h1><p class="sub">Paste a video link, choose audio or video, and optionally trim only the section you need.</p>
-      <div class="stack">
-        <div class="field"><label for="single-url">Media URL</label><input id="single-url" class="control" placeholder="https://youtube.com/watch?v=…" autocomplete="off"></div>
-        <div class="grid2"><div class="field"><label>Format</label><select id="single-format" class="control" onchange="fillQuality('single')"><option value="mp3">MP3 Audio</option><option value="mp4">MP4 Video</option></select></div><div class="field"><label>Quality</label><select id="single-quality" class="control"></select></div></div>
-        <div class="card"><div class="row"><div><strong style="font-size:13px">Trim download</strong><div style="font-size:11px;color:var(--muted);margin-top:3px">Leave off to save the full file.</div></div><label class="switch"><input id="single-trim" type="checkbox" onchange="toggleSingleTrim()"><span class="track"></span></label></div><div id="single-trim-box" class="trim"><div class="grid2"><div class="field"><label>Start</label><input id="single-start" class="control" placeholder="01:30"></div><div class="field"><label>End</label><input id="single-end" class="control" placeholder="05:45"></div></div><div><label style="display:block;font-size:11px;color:#c6cdd5;margin-bottom:7px">Trim processing</label><div id="single-trim-seg" class="seg"><button class="active" onclick="setTrimMode('single','fast')">Fast</button><button onclick="setTrimMode('single','exact')">Exact</button></div><input id="single-trim-mode" type="hidden" value="fast"></div></div></div>
-        <button id="single-download" class="primary" onclick="startSingle()" disabled>Download</button>
-        <div id="download-error" class="message error"></div><div id="download-info" class="message info"></div>
+      <div class="page-head">
+        <div class="kicker">Single file</div>
+        <h1 class="page-title">Download media</h1>
+        <p class="page-sub">Paste a link, choose audio or video, and download the full file or only the part you need.</p>
       </div>
+
+      <div class="section">
+        <div>
+          <label class="label" for="single-url">Media link</label>
+          <div class="url-wrap">
+            <input id="single-url" class="control" placeholder="Paste YouTube or media URL" autocomplete="off" inputmode="url">
+            <button class="clear-url" type="button" aria-label="Clear link" onclick="clearUrl('single-url')">×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card section">
+        <div>
+          <span class="label">Download as</span>
+          <div id="single-format-tabs" class="format-tabs">
+            <button id="single-format-mp3" class="active" type="button" onclick="setFormat('single','mp3')"><span class="format-icon">♪</span>Audio</button>
+            <button id="single-format-mp4" type="button" onclick="setFormat('single','mp4')"><span class="format-icon">▶</span>Video</button>
+          </div>
+          <select id="single-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="mp4">MP4</option></select>
+        </div>
+        <div class="quality-row">
+          <div><label class="label" for="single-quality">Quality</label><select id="single-quality" class="control"></select></div>
+        </div>
+      </div>
+
+      <div class="section-card section">
+        <div class="trim-head">
+          <div class="trim-copy"><strong>Trim this file</strong><span>Turn on to download only a specific section.</span></div>
+          <label class="switch"><input id="single-trim" type="checkbox" onchange="toggleSingleTrim()"><span class="track"></span></label>
+        </div>
+        <div id="single-trim-box" class="trim-box">
+          <div class="time-grid">
+            <div><label class="label">Start</label><input id="single-start" class="control" placeholder="01:30" inputmode="decimal"></div>
+            <div><label class="label">End</label><input id="single-end" class="control" placeholder="05:45" inputmode="decimal"></div>
+          </div>
+          <div>
+            <label class="label">Trim processing</label>
+            <div id="single-trim-seg" class="segment"><button class="active" type="button" onclick="setTrimMode('single','fast')">Fast</button><button type="button" onclick="setTrimMode('single','exact')">Exact</button></div>
+            <input id="single-trim-mode" type="hidden" value="fast">
+            <div class="help" style="margin-top:7px">Fast is recommended. Exact gives more precise cut points when needed.</div>
+          </div>
+        </div>
+      </div>
+
+      <button id="single-download" class="primary" type="button" onclick="startSingle()" disabled>Download</button>
+      <div id="download-error" class="message error"></div>
+      <div id="download-info" class="message info"></div>
     </section>
 
     <section id="playlist-page" class="page">
-      <div class="eyebrow">Multiple media</div><h1 class="title">Playlist</h1><p class="sub">Load the playlist first, then choose Full, Trim or Skip for each item.</p>
-      <div class="stack">
-        <div class="field"><label for="playlist-url">Playlist URL</label><input id="playlist-url" class="control" placeholder="https://youtube.com/playlist?list=…" autocomplete="off"></div>
-        <div class="grid2"><div class="field"><label>Format</label><select id="playlist-format" class="control" onchange="fillQuality('playlist')"><option value="mp3">MP3 Audio</option><option value="mp4">MP4 Video</option></select></div><div class="field"><label>Quality</label><select id="playlist-quality" class="control"></select></div></div>
-        <button id="load-playlist" class="secondary" onclick="loadPlaylist()" disabled>Load playlist</button>
-        <div id="playlist-empty" class="playlist-empty">No playlist loaded yet.</div>
-        <div id="playlist-head" class="playlist-head"><div class="plist-summary"><div><strong id="playlist-title">Playlist</strong><span id="playlist-meta">0 items</span></div><div class="plist-actions"><button class="tiny" onclick="setAll('full')">All full</button><button class="tiny" onclick="setAll('skip')">Skip all</button></div></div><div id="playlist-list" class="plist"></div><div class="playlist-footer"><span id="playlist-selected">0 selected</span><div id="playlist-trim-seg" class="seg" style="width:180px"><button class="active" onclick="setTrimMode('playlist','fast')">Fast</button><button onclick="setTrimMode('playlist','exact')">Exact</button></div><input id="playlist-trim-mode" type="hidden" value="fast"></div></div>
-        <button id="playlist-download" class="primary" onclick="startPlaylist()" disabled>Download selected</button>
-        <div id="playlist-error" class="message error"></div><div id="playlist-info" class="message info"></div>
+      <div class="page-head">
+        <div class="kicker">Playlist</div>
+        <h1 class="page-title">Choose what to save</h1>
+        <p class="page-sub">Load a playlist, then mark every item as Full, Trim or Skip.</p>
+      </div>
+
+      <div class="section">
+        <div>
+          <label class="label" for="playlist-url">Playlist link</label>
+          <div class="url-wrap">
+            <input id="playlist-url" class="control" placeholder="Paste playlist URL" autocomplete="off" inputmode="url">
+            <button class="clear-url" type="button" aria-label="Clear link" onclick="clearUrl('playlist-url')">×</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card section">
+        <div>
+          <span class="label">Download as</span>
+          <div id="playlist-format-tabs" class="format-tabs">
+            <button id="playlist-format-mp3" class="active" type="button" onclick="setFormat('playlist','mp3')"><span class="format-icon">♪</span>Audio</button>
+            <button id="playlist-format-mp4" type="button" onclick="setFormat('playlist','mp4')"><span class="format-icon">▶</span>Video</button>
+          </div>
+          <select id="playlist-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="mp4">MP4</option></select>
+        </div>
+        <div><label class="label" for="playlist-quality">Quality</label><select id="playlist-quality" class="control"></select></div>
+      </div>
+
+      <button id="load-playlist" class="secondary" type="button" onclick="loadPlaylist()" disabled>Load playlist</button>
+      <div id="playlist-error" class="message error"></div>
+      <div id="playlist-info" class="message info"></div>
+
+      <div id="playlist-empty" class="playlist-empty" style="margin-top:14px"><div class="empty-icon">≡</div>No playlist loaded yet.<br>Load one to choose which files you want.</div>
+
+      <div id="playlist-head" class="playlist-head" style="margin-top:14px">
+        <div class="playlist-summary">
+          <div class="playlist-summary-top">
+            <div class="playlist-summary-title"><strong id="playlist-title">Playlist</strong><span id="playlist-meta">0 items</span></div>
+            <div class="bulk-actions"><button class="tiny" type="button" onclick="setAll('full')">All full</button><button class="tiny" type="button" onclick="setAll('skip')">Skip all</button></div>
+          </div>
+        </div>
+
+        <div id="playlist-list" class="playlist-list"></div>
+
+        <div class="playlist-options">
+          <div id="playlist-selected" class="playlist-selected">0 selected</div>
+          <div><label class="label">Trim processing for trimmed items</label><div id="playlist-trim-seg" class="segment"><button class="active" type="button" onclick="setTrimMode('playlist','fast')">Fast</button><button type="button" onclick="setTrimMode('playlist','exact')">Exact</button></div><input id="playlist-trim-mode" type="hidden" value="fast"></div>
+        </div>
+
+        <div class="sticky-cta"><button id="playlist-download" class="primary" type="button" onclick="startPlaylist()" disabled>Download selected</button></div>
       </div>
     </section>
   </main>
 
-  <section id="activity" class="activity"><div class="activity-top"><div class="activity-copy"><strong id="activity-title">Download</strong><span id="activity-status">Preparing…</span></div><div id="activity-percent" class="percent">0%</div></div><div class="bar"><div id="activity-fill" class="fill"></div></div><div class="activity-buttons"><button id="cancel-btn" class="ghost" onclick="cancelJob()">Cancel</button><button id="open-btn" class="secondary" onclick="openDownloads()" style="display:none">Open Downloads</button></div></section>
+  <section id="activity" class="activity">
+    <div class="activity-top">
+      <div class="activity-copy"><strong id="activity-title">Download</strong><span id="activity-status">Preparing…</span></div>
+      <div id="activity-percent" class="percent">0%</div>
+    </div>
+    <div class="bar"><div id="activity-fill" class="fill"></div></div>
+    <div class="activity-actions"><button id="cancel-btn" class="ghost" type="button" onclick="cancelJob()">Cancel</button><button id="open-btn" class="secondary" type="button" onclick="openDownloads()" style="display:none">Open Downloads</button></div>
+  </section>
 
-  <nav class="nav"><button id="nav-download" class="active" onclick="switchPage('download')"><b>↓</b>Download</button><button id="nav-playlist" onclick="switchPage('playlist')"><b>≡</b>Playlist</button></nav>
+  <nav class="bottom-nav">
+    <button id="nav-download" class="active" type="button" onclick="switchPage('download')"><span class="nav-icon">↓</span><span>Download</span></button>
+    <button id="nav-playlist" type="button" onclick="switchPage('playlist')"><span class="nav-icon">≡</span><span>Playlist</span></button>
+  </nav>
 </div>
+
 <script>
 const quality={mp3:[['192 kbps','192'],['256 kbps','256'],['320 kbps','320']],mp4:[['Best available','best'],['1080p','1080'],['720p','720'],['480p','480'],['360p','360']]};
 let ready=false,busy=false,playlist=[],playlistTitle='Playlist';
 function $(id){return document.getElementById(id)}
+function clearUrl(id){$(id).value='';$(id).focus()}
 function fillQuality(scope){const fmt=$(scope+'-format').value,sel=$(scope+'-quality');sel.innerHTML='';quality[fmt].forEach(([l,v])=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o)})}
+function setFormat(scope,fmt){$(scope+'-format').value=fmt;['mp3','mp4'].forEach(v=>$(scope+'-format-'+v).classList.toggle('active',v===fmt));fillQuality(scope)}
 fillQuality('single');fillQuality('playlist');
-function switchPage(name){['download','playlist'].forEach(p=>{$(p+'-page').classList.toggle('active',p===name);$('nav-'+p).classList.toggle('active',p===name)})}
+function switchPage(name){['download','playlist'].forEach(p=>{$(p+'-page').classList.toggle('active',p===name);$('nav-'+p).classList.toggle('active',p===name)});document.querySelector('.content')?.scrollTo?.(0,0)}
 function toggleSingleTrim(){$('single-trim-box').classList.toggle('visible',$('single-trim').checked)}
 function setTrimMode(scope,val){$(scope+'-trim-mode').value=val;[...$(scope+'-trim-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.textContent.toLowerCase().startsWith(val)))}
 function setBusy(v){busy=v;$('single-download').disabled=v||!ready;$('load-playlist').disabled=v||!ready;updatePlaylistButton()}
@@ -60,18 +235,19 @@ function startSingle(){clearMsg('download');if(!ready)return msg('download','err
 function loadPlaylist(){clearMsg('playlist');const url=$('playlist-url').value.trim();if(!url)return msg('playlist','error','Paste a playlist URL first.');$('load-playlist').disabled=true;msg('playlist','info','Loading playlist…');AndroidApp.inspectPlaylist(url)}
 function renderPlaylist(){const head=$('playlist-head'),empty=$('playlist-empty'),list=$('playlist-list');if(!playlist.length){head.classList.remove('visible');empty.style.display='block';list.innerHTML='';return}empty.style.display='none';head.classList.add('visible');$('playlist-title').textContent=playlistTitle;$('playlist-meta').textContent=`${playlist.length} items`;list.innerHTML=playlist.map((it,i)=>rowHtml(it,i)).join('');updateSelected();updatePlaylistButton()}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function rowHtml(it,i){const skip=it.mode==='skip'?'skipped':'',trim=it.mode==='trim'?'visible':'';return `<div class="pitem ${skip}"><div class="pbase"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="ptitle">${esc(it.title)}</div><div class="pmode"><button class="${it.mode==='full'?'active':''}" onclick="itemMode(${i},'full')">Full</button><button class="${it.mode==='trim'?'active':''}" onclick="itemMode(${i},'trim')">Trim</button><button class="${it.mode==='skip'?'active':''}" onclick="itemMode(${i},'skip')">Skip</button></div></div><div class="ptrim ${trim}"><input class="control" placeholder="Start 01:30" value="${esc(it.start)}" oninput="itemTime(${i},'start',this.value)"><input class="control" placeholder="End 05:45" value="${esc(it.end)}" oninput="itemTime(${i},'end',this.value)"></div></div>`}
+function rowHtml(it,i){const skip=it.mode==='skip'?'skipped':'',trim=it.mode==='trim'?'visible':'';return `<div class="pitem ${skip}"><div class="pitem-head"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="ptitle">${esc(it.title)}</div></div><div class="pmode"><button data-mode="full" class="${it.mode==='full'?'active':''}" onclick="itemMode(${i},'full')">Full</button><button data-mode="trim" class="${it.mode==='trim'?'active':''}" onclick="itemMode(${i},'trim')">Trim</button><button data-mode="skip" class="${it.mode==='skip'?'active':''}" onclick="itemMode(${i},'skip')">Skip</button></div><div class="ptrim ${trim}"><input class="control" placeholder="Start 01:30" value="${esc(it.start)}" inputmode="decimal" oninput="itemTime(${i},'start',this.value)"><input class="control" placeholder="End 05:45" value="${esc(it.end)}" inputmode="decimal" oninput="itemTime(${i},'end',this.value)"></div></div>`}
 function itemMode(i,m){playlist[i].mode=m;if(m!=='trim'){playlist[i].start='';playlist[i].end=''}renderPlaylist()}
 function itemTime(i,k,v){playlist[i][k]=v}
 function setAll(m){playlist.forEach(it=>{it.mode=m;if(m!=='trim'){it.start='';it.end=''}});renderPlaylist()}
-function updateSelected(){const selected=playlist.filter(x=>x.mode!=='skip').length,trimmed=playlist.filter(x=>x.mode==='trim').length;$('playlist-selected').textContent=`${selected} selected${trimmed?` • ${trimmed} trimmed`:''}`}
+function updateSelected(){const selected=playlist.filter(x=>x.mode!=='skip').length,trimmed=playlist.filter(x=>x.mode==='trim').length;$('playlist-selected').innerHTML=`${selected} selected <span>${trimmed?`• ${trimmed} trimmed`:''}</span>`;$('playlist-download').textContent=selected?`Download ${selected} file${selected===1?'':'s'}`:'Download selected'}
 function updatePlaylistButton(){const n=playlist.filter(x=>x.mode!=='skip').length;$('playlist-download').disabled=busy||!ready||n===0}
 function startPlaylist(){clearMsg('playlist');const selected=playlist.filter(x=>x.mode!=='skip');if(!selected.length)return msg('playlist','error','Select at least one item.');try{playlist.filter(x=>x.mode==='trim').forEach(x=>validateRange(x.start,x.end))}catch(e){return msg('playlist','error',e.message)}const payload={title:playlistTitle,format:$('playlist-format').value,quality:$('playlist-quality').value,trim_mode:$('playlist-trim-mode').value,items:playlist.map(x=>({url:x.url,title:x.title,mode:x.mode,start:x.start||'',end:x.end||''}))};setBusy(true);showActivity('Playlist download',`Starting ${selected.length} items…`,0);AndroidApp.startPlaylist(JSON.stringify(payload))}
 function showActivity(title,status,percent){$('activity').classList.add('show');$('activity-title').textContent=title;$('activity-status').textContent=status;$('activity-percent').textContent=Math.round(percent)+'%';$('activity-fill').style.width=Math.max(0,Math.min(100,percent))+'%';$('open-btn').style.display='none';$('cancel-btn').style.display='inline-flex'}
 function cancelJob(){AndroidApp.cancelCurrent()}
 function openDownloads(){AndroidApp.openDownloads()}
+function setEnginePill(readyState,status){const el=$('engine');el.classList.toggle('ready',!!readyState);el.classList.toggle('error',String(status||'').toLowerCase().includes('error'));el.querySelector('span:last-child').textContent=status||'Engine'}
 window.AndroidCallbacks={
- onEngineState(data){ready=!!data.ready;$('engine').textContent=data.status||'Engine';$('engine').className='engine '+(ready?'ready':String(data.status||'').toLowerCase().includes('error')?'error':'');setBusy(busy)},
+ onEngineState(data){ready=!!data.ready;setEnginePill(ready,data.status||'Engine');setBusy(busy)},
  onSharedUrl(data){if(data&&data.url){$('single-url').value=data.url;switchPage('download');msg('download','info','Shared link received.')}},
  onPlaylistLoaded(data){$('load-playlist').disabled=busy||!ready;playlistTitle=data.title||'Playlist';playlist=(data.items||[]).map(x=>({...x,mode:'full',start:'',end:''}));renderPlaylist();msg('playlist','info',`Loaded ${playlist.length} items.`)},
  onJobProgress(data){const scope=data.scope||'download',title=scope==='playlist'?'Playlist download':'Media download';let st=data.status||'Processing…';if(scope==='playlist'&&data.total)st=`${data.completed||0}/${data.total} completed • ${st}`;showActivity(title,st,data.percent||0)},
