@@ -10,8 +10,8 @@ android {
         applicationId = "com.haseeb.mediadownloader"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
-        versionName = "0.1.6-beta"
+        versionCode = 7
+        versionName = "0.1.7-beta"
 
         ndk {
             abiFilters += listOf("arm64-v8a")

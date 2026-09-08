@@ -1,23 +1,22 @@
-# Media Downloader Android v0.1.6 beta
+# Media Downloader Android v0.1.7 beta
 
-ARM64 Android build of the Media Downloader with a fully reworked phone UI.
+ARM64 Android build focused on faster startup and faster download/post-processing while retaining the phone-first v0.1.6 UI.
 
-## v0.1.6 UI rebuild
+## v0.1.7 speed improvements
 
-- Fixed horizontal overflow when long media or playlist links are pasted.
-- Added explicit `min-width: 0`, constrained grids, word breaking, and overflow-safe status/error text throughout the app.
-- Rebuilt the top app bar for narrow phones with a compact engine-status pill.
-- Replaced fragile Unicode navigation/format symbols with inline SVG icons for consistent Android rendering.
-- Increased all important touch targets: URL actions, format tabs, trim controls, playlist actions, item modes, progress actions, and bottom navigation.
-- Improved typography and wording for small phone screens.
-- Rebuilt Audio / Video selection with clear MP3 / MP4 labels.
-- Improved trim controls and renamed Exact to the clearer UI label Precise while preserving the backend `exact` value.
-- Playlist titles and item titles now wrap safely instead of pushing the page out of bounds.
-- Playlist item Full / Trim / Skip controls have larger buttons and trim fields stack automatically on narrow phones.
-- Progress status can wrap to two lines instead of forcing long text off-screen.
-- Added layouts for very narrow phones, normal portrait phones, and larger/landscape screens.
-- ARM64-only (`arm64-v8a`) packaging is retained.
-- Downloader, playlist, trimming, FFmpeg, progress callbacks, native bridge, and GitHub Release delivery remain unchanged.
+- yt-dlp readiness no longer waits for FFmpeg initialization or an online updater check.
+- FFmpeg initializes in the background; a download only waits for it if media processing is actually needed before it is ready.
+- yt-dlp update checks are silent, non-blocking, and limited to once every 24 hours after a successful update.
+- Single downloads use up to 8 concurrent fragments; playlist items remain at 4 fragments each while two playlist files can download in parallel.
+- MP3 prefers an audio-only M4A source so video is not downloaded unnecessarily.
+- MP4 prefers native MP4 video + M4A audio so normal MP4 post-processing can usually be a fast stream merge instead of video re-encoding.
+- Fast trim remains the default; Precise trim remains available when frame-accurate cuts are required.
+- Progress text now identifies download, merge, MP3 conversion, trim, finalization, and saving stages more clearly.
+- Playlist output now defaults to **Save as folder**, avoiding the expensive mandatory ZIP pass.
+- Optional ZIP output is retained and uses no-compression ZIP packaging because MP3/MP4 files are already compressed.
+- Android Downloads copy buffers were increased to reduce file-save overhead.
+- Playlist folder output is saved under `Downloads/Media Downloader/<Playlist Name>`.
+- ARM64-only (`arm64-v8a`) packaging remains enabled.
 
 ## Build
 

@@ -264,7 +264,7 @@ button:disabled{opacity:.42;cursor:not-allowed;transform:none!important}
       </div>
       <div class="brand-copy">
         <span class="brand-title">Media Downloader</span>
-        <span class="brand-sub">Android beta</span>
+        <span class="brand-sub">v0.1.7 beta</span>
       </div>
     </div>
     <div id="engine" class="engine-pill" aria-live="polite"><span class="dot"></span><span class="engine-text">Starting engine</span></div>
@@ -411,6 +411,15 @@ button:disabled{opacity:.42;cursor:not-allowed;transform:none!important}
             </div>
             <input id="playlist-trim-mode" type="hidden" value="fast">
           </div>
+          <div>
+            <label class="label">Playlist output</label>
+            <div id="playlist-package-seg" class="segment">
+              <button class="active" data-value="folder" type="button" onclick="setPackageMode('folder')">Save as folder</button>
+              <button data-value="zip" type="button" onclick="setPackageMode('zip')">Create ZIP</button>
+            </div>
+            <input id="playlist-package-mode" type="hidden" value="folder">
+            <div class="help">Folder is fastest. ZIP is optional and adds a packaging step after downloading.</div>
+          </div>
         </div>
 
         <div class="sticky-cta"><button id="playlist-download" class="primary" type="button" onclick="startPlaylist()" disabled>Download selected</button></div>
@@ -473,6 +482,10 @@ function toggleSingleTrim(){$('single-trim-box').classList.toggle('visible',$('s
 function setTrimMode(scope,val){
   $(scope+'-trim-mode').value=val;
   [...$(scope+'-trim-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val));
+}
+function setPackageMode(val){
+  $('playlist-package-mode').value=val;
+  [...$('playlist-package-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val));
 }
 function setBusy(v){
   busy=v;
@@ -548,7 +561,7 @@ function startPlaylist(){
   clearMsg('playlist');
   const selected=playlist.filter(x=>x.mode!=='skip');if(!selected.length)return msg('playlist','error','Select at least one item.');
   try{playlist.filter(x=>x.mode==='trim').forEach(x=>validateRange(x.start,x.end))}catch(e){return msg('playlist','error',e.message)}
-  const payload={title:playlistTitle,format:$('playlist-format').value,quality:$('playlist-quality').value,trim_mode:$('playlist-trim-mode').value,items:playlist.map(x=>({url:x.url,title:x.title,mode:x.mode,start:x.start||'',end:x.end||''}))};
+  const payload={title:playlistTitle,format:$('playlist-format').value,quality:$('playlist-quality').value,trim_mode:$('playlist-trim-mode').value,package_mode:$('playlist-package-mode').value,items:playlist.map(x=>({url:x.url,title:x.title,mode:x.mode,start:x.start||'',end:x.end||''}))};
   setBusy(true);showActivity('Playlist download',`Starting ${selected.length} item${selected.length===1?'':'s'}...`,0);AndroidApp.startPlaylist(JSON.stringify(payload));
 }
 function syncActivityButtons(){
