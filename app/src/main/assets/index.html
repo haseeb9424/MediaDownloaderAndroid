@@ -3,595 +3,269 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0e13">
+<meta name="theme-color" content="#090c11">
 <title>Media Downloader</title>
 <style>
 :root{
   color-scheme:dark;
-  --bg:#0b0e13;
-  --panel:#11161d;
-  --panel-2:#171d26;
-  --panel-3:#1d2530;
-  --border:#28313d;
-  --border-strong:#354150;
-  --text:#f6f8fb;
-  --text-2:#cbd3dc;
-  --muted:#929daa;
-  --accent:#6d8cff;
-  --accent-strong:#5877ef;
-  --accent-soft:rgba(109,140,255,.14);
-  --success:#58d6a2;
-  --danger:#ff747e;
-  --warning:#f0bd6a;
-  --radius:18px;
-  --control-h:56px;
-  --content-max:600px;
+  --bg:#090c11;
+  --surface:#10151d;
+  --surface-2:#151c26;
+  --surface-3:#1b2431;
+  --line:#263241;
+  --line-2:#344257;
+  --text:#f7f9fc;
+  --text-2:#d4dbe5;
+  --muted:#8f9aaa;
+  --muted-2:#6f7b8b;
+  --accent:#7895ff;
+  --accent-2:#5977ef;
+  --accent-soft:rgba(120,149,255,.13);
+  --good:#56d6a0;
+  --warn:#f0bd69;
+  --bad:#ff767f;
+  --radius:20px;
+  --radius-sm:14px;
+  --control:58px;
+  --content:640px;
 }
-
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;width:100%;height:100%;min-width:0;background:var(--bg);color:var(--text);font-family:Roboto,"Segoe UI",system-ui,-apple-system,BlinkMacSystemFont,sans-serif;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{margin:0;width:100%;height:100%;min-width:0;background:var(--bg);color:var(--text);font-family:Roboto,"Segoe UI",system-ui,-apple-system,sans-serif;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow:hidden}
 button,input,select{font:inherit;max-width:100%}
 button{cursor:pointer;touch-action:manipulation}
 input,select{min-width:0}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-
-.app{
-  width:100%;height:100vh;height:100dvh;min-width:0;overflow:hidden;
-  display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;
-  background:var(--bg);
-  padding-top:env(safe-area-inset-top);
-  padding-bottom:env(safe-area-inset-bottom);
-}
-
-/* Top app bar */
-.topbar{
-  min-width:0;min-height:62px;padding:9px 14px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  border-bottom:1px solid var(--border);background:rgba(11,14,19,.98);
-}
-.brand{min-width:0;display:flex;align-items:center;gap:11px}
-.logo{
-  width:42px;height:42px;flex:0 0 42px;border-radius:13px;
-  display:grid;place-items:center;background:linear-gradient(145deg,#718fff,#536fe7);
-  box-shadow:0 8px 22px rgba(70,96,205,.22);
-}
-.logo svg{width:22px;height:22px;display:block;fill:none;stroke:white;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
-.brand-copy{min-width:0}
-.brand-title{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:800;letter-spacing:-.01em}
-.brand-sub{display:block;margin-top:2px;color:var(--muted);font-size:11px;white-space:nowrap}
-.engine-pill{
-  min-width:0;max-width:42%;height:36px;padding:0 10px;flex:0 1 auto;
-  display:flex;align-items:center;gap:7px;border:1px solid var(--border);
-  border-radius:999px;background:var(--panel);color:var(--muted);font-size:11px;font-weight:650;
-}
-.engine-pill .dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--warning)}
-.engine-pill.ready .dot{background:var(--success)}
-.engine-pill.error .dot{background:var(--danger)}
-.engine-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-/* Scroll area */
-.content{min-width:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:18px 14px 26px;scrollbar-width:none}
-.content::-webkit-scrollbar{display:none}
-.page{display:none;width:100%;min-width:0;max-width:var(--content-max);margin:0 auto}
-.page.active{display:block}
-.page-head{min-width:0;margin:0 2px 18px}
-.eyebrow{margin-bottom:5px;color:#9cadff;font-size:11px;font-weight:850;letter-spacing:.10em;text-transform:uppercase}
-.page-title{margin:0;color:var(--text);font-size:25px;line-height:1.16;letter-spacing:-.035em;font-weight:850}
-.page-sub{margin:7px 0 0;color:var(--muted);font-size:13px;line-height:1.5;overflow-wrap:anywhere}
-
-.stack{display:grid;gap:12px;min-width:0}
-.card{min-width:0;width:100%;padding:15px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel)}
-.card + .card{margin-top:12px}
-.field{min-width:0}
-.field + .field{margin-top:13px}
-.label{display:block;margin:0 0 8px;color:var(--text-2);font-size:12px;font-weight:750}
-.help{margin-top:7px;color:var(--muted);font-size:11px;line-height:1.45;overflow-wrap:anywhere}
-.control{
-  width:100%;min-width:0;height:var(--control-h);padding:0 14px;
-  border:1px solid var(--border);border-radius:14px;background:#0e1319;color:var(--text);
-  font-size:16px;line-height:1;outline:none;appearance:none;-webkit-appearance:none;
-}
-.control::placeholder{color:#77828e;opacity:1}
-.control:focus{border-color:#6684f4;box-shadow:0 0 0 3px rgba(102,132,244,.12)}
-select.control{
-  padding-right:42px;
-  background-image:linear-gradient(45deg,transparent 50%,#9da7b2 50%),linear-gradient(135deg,#9da7b2 50%,transparent 50%);
-  background-position:calc(100% - 20px) 25px,calc(100% - 15px) 25px;
-  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
-}
-
-/* URL entry: intentionally grid-based so long links cannot widen the page */
-.url-row{width:100%;min-width:0;display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:8px}
-.url-row .control{width:100%;min-width:0}
-.clear-button{
-  width:58px;height:var(--control-h);padding:0;border:1px solid var(--border);border-radius:14px;
-  background:var(--panel-2);color:var(--text-2);font-size:12px;font-weight:800;
-}
-.clear-button:active{background:var(--panel-3)}
-
-/* Audio / video selector */
-.format-tabs{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:5px;border:1px solid var(--border);border-radius:16px;background:#0d1117}
-.format-tabs button{
-  min-width:0;min-height:58px;padding:7px 8px;border:1px solid transparent;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;gap:9px;background:transparent;color:var(--muted);
-}
-.format-tabs button.active{border-color:var(--border-strong);background:var(--panel-2);color:var(--text);box-shadow:0 4px 15px rgba(0,0,0,.13)}
-.format-icon{width:22px;height:22px;flex:0 0 22px;display:grid;place-items:center}
-.format-icon svg{width:20px;height:20px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.format-copy{min-width:0;text-align:left}
-.format-copy strong{display:block;font-size:13px;line-height:1.1;font-weight:800}
-.format-copy small{display:block;margin-top:3px;font-size:10px;line-height:1;color:var(--muted);font-weight:650}
-.format-tabs button.active .format-copy small{color:#aeb7c4}
-.hidden-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
-
-/* Trim */
-.trim-row{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:14px}
-.trim-copy{min-width:0}
-.trim-copy strong{display:block;font-size:14px;line-height:1.3;font-weight:800}
-.trim-copy span{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere}
-.switch{width:52px;height:32px;position:relative;flex:0 0 52px}
-.switch input{position:absolute;opacity:0;pointer-events:none}
-.track{position:absolute;inset:0;border:1px solid var(--border-strong);border-radius:999px;background:#28303a;transition:.16s ease}
-.track:after{content:"";position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:#aab4bf;transition:.16s ease}
-.switch input:checked + .track{border-color:var(--accent);background:var(--accent)}
-.switch input:checked + .track:after{transform:translateX(20px);background:white}
-.trim-box{display:none;min-width:0;margin-top:15px;padding-top:15px;border-top:1px solid var(--border);gap:14px}
-.trim-box.visible{display:grid}
-.time-grid{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}
-.time-grid > div{min-width:0}
-.time-grid .control{height:54px}
-.segment{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;padding:5px;border:1px solid var(--border);border-radius:14px;background:#0d1117}
-.segment button{min-width:0;min-height:48px;padding:0 10px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);font-size:12px;font-weight:800}
-.segment button.active{border-color:var(--border-strong);background:var(--panel-2);color:var(--text)}
-.segment button[data-value="fast"].active{background:var(--accent-soft);border-color:rgba(109,140,255,.42);color:#dce3ff}
-
-/* Primary actions */
-.primary,.secondary,.ghost{
-  width:100%;min-width:0;min-height:56px;padding:10px 14px;border-radius:14px;
-  display:inline-flex;align-items:center;justify-content:center;text-align:center;
-  font-size:14px;line-height:1.25;font-weight:850;border:1px solid transparent;
-}
-.primary{background:linear-gradient(145deg,#718fff,#5a77eb);color:#fff;box-shadow:0 8px 22px rgba(69,95,203,.2)}
-.primary:active{transform:translateY(1px);background:var(--accent-strong)}
-.secondary{border-color:var(--border);background:var(--panel-2);color:var(--text)}
-.ghost{border-color:var(--border);background:transparent;color:var(--text-2)}
-button:disabled{opacity:.42;cursor:not-allowed;transform:none!important}
-.action-wrap{margin-top:14px}
-
-.message{display:none;width:100%;min-width:0;margin-top:10px;padding:13px 14px;border-radius:13px;font-size:12px;line-height:1.48;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}
-.message.show{display:block}
-.message.error{border:1px solid rgba(255,116,126,.28);background:rgba(255,116,126,.10);color:#ffcbd0}
-.message.info{border:1px solid rgba(109,140,255,.25);background:rgba(109,140,255,.10);color:#dce3ff}
-
-/* Playlist */
-.playlist-empty{min-width:0;margin-top:14px;padding:28px 18px;border:1px dashed var(--border-strong);border-radius:var(--radius);background:rgba(17,22,29,.72);text-align:center}
-.empty-icon{width:46px;height:46px;margin:0 auto 10px;display:grid;place-items:center;border-radius:14px;background:var(--panel-2);color:#a8b5c7}
-.empty-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.playlist-empty strong{display:block;font-size:13px;color:var(--text-2)}
-.playlist-empty span{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.45}
-.playlist-head{display:none;min-width:0;margin-top:14px}.playlist-head.visible{display:block}
-.playlist-summary{min-width:0;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel)}
-.playlist-summary-top{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
-.playlist-summary-title{min-width:0}
-.playlist-summary-title strong{display:block;max-width:100%;font-size:14px;line-height:1.4;font-weight:800;overflow-wrap:anywhere;word-break:break-word}
-.playlist-summary-title span{display:block;margin-top:3px;color:var(--muted);font-size:11px}
-.bulk-actions{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-.small-action{min-width:0;min-height:46px;padding:8px 10px;border:1px solid var(--border);border-radius:12px;background:var(--panel-2);color:var(--text-2);font-size:12px;font-weight:800}
-
-.playlist-list{min-width:0;display:grid;gap:10px;margin-top:10px}
-.pitem{min-width:0;width:100%;padding:13px;border:1px solid var(--border);border-radius:16px;background:var(--panel);transition:opacity .15s,border-color .15s}
-.pitem.skipped{opacity:.56}
-.pitem-head{min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);gap:10px;align-items:start}
-.num{height:34px;display:grid;place-items:center;border-radius:10px;background:var(--panel-2);color:var(--muted);font-size:10px;font-weight:850;font-variant-numeric:tabular-nums}
-.ptitle{min-width:0;padding-top:2px;color:var(--text);font-size:13px;line-height:1.45;font-weight:750;overflow-wrap:anywhere;word-break:break-word}
-.pmode{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px;padding:5px;border:1px solid var(--border);border-radius:13px;background:#0d1117}
-.pmode button{min-width:0;min-height:46px;padding:6px 4px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font-size:11px;font-weight:850}
-.pmode button.active{border-color:var(--border-strong);background:var(--panel-3);color:var(--text)}
-.pmode button[data-mode="trim"].active{border-color:rgba(109,140,255,.65);background:var(--accent);color:white}
-.pmode button[data-mode="skip"].active{border-color:rgba(255,116,126,.35);background:rgba(255,116,126,.13);color:#ffc0c5}
-.ptrim{display:none;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px;margin-top:10px}
-.ptrim.visible{display:grid}
-.ptrim .control{height:52px;font-size:15px;padding:0 11px}
-.playlist-options{min-width:0;display:grid;gap:13px;margin-top:10px;padding:14px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel)}
-.playlist-selected{min-width:0;font-size:13px;font-weight:800;color:var(--text-2);overflow-wrap:anywhere}
-.playlist-selected span{color:var(--muted);font-weight:600}
-.sticky-cta{position:sticky;bottom:8px;z-index:4;margin-top:10px;padding:9px;border:1px solid rgba(40,49,61,.85);border-radius:17px;background:rgba(11,14,19,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-
-/* Download activity / progress */
-.activity{display:none;min-width:0;padding:11px 14px 12px;border-top:1px solid var(--border);background:#0e1218}
-.activity.show{display:block}
-.activity-top{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
-.activity-copy{min-width:0}
-.activity-copy strong{display:block;font-size:12px;line-height:1.25;font-weight:850}
-.activity-copy span{display:-webkit-box;min-width:0;margin-top:3px;color:var(--muted);font-size:10px;line-height:1.35;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;word-break:break-word}
-.percent{padding-top:1px;color:var(--text-2);font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
-.bar{height:7px;margin-top:9px;overflow:hidden;border-radius:999px;background:#252d37}
-.fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#6684f5,#7b9aff);transition:width .18s ease}
-.activity-actions{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
-.activity-actions.two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-.activity-actions .ghost,.activity-actions .secondary{min-height:46px;font-size:12px;padding:7px 10px}
-
-/* Bottom nav */
-.bottom-nav{min-width:0;min-height:66px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--border);background:#0c1015}
-.bottom-nav button{min-width:0;min-height:66px;padding:7px 8px;border:0;background:transparent;color:#7f8b98;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:750}
-.bottom-nav button.active{color:#cfd9ff;background:linear-gradient(to top,rgba(109,140,255,.09),transparent)}
-.nav-icon{width:23px;height:23px;display:grid;place-items:center}
-.nav-icon svg{width:22px;height:22px;display:block;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-
-/* Narrow phones */
-@media (max-width:380px){
-  .topbar{padding-left:11px;padding-right:11px}
-  .logo{width:39px;height:39px;flex-basis:39px}
-  .brand-sub{display:none}
-  .engine-pill{max-width:40%;height:34px;padding:0 9px;font-size:10px}
-  .content{padding-left:11px;padding-right:11px}
-  .page-title{font-size:23px}
-  .card{padding:13px}
-  .format-tabs button{gap:6px}
-  .time-grid,.ptrim{grid-template-columns:minmax(0,1fr)}
-  .pmode button{font-size:10.5px}
-}
-
-/* Very narrow / accessibility fallback */
-@media (max-width:320px){
-  .engine-text{display:none}
-  .engine-pill{width:36px;max-width:36px;justify-content:center;padding:0}
-  .url-row{grid-template-columns:minmax(0,1fr)}
-  .clear-button{width:100%;height:48px}
-  .format-copy small{display:none}
-  .bulk-actions{grid-template-columns:minmax(0,1fr)}
-}
-
-/* Landscape phones / larger screens */
-@media (min-width:700px){
-  .content{padding-top:22px}
-  .page-title{font-size:28px}
-  .playlist-summary-top{grid-template-columns:minmax(0,1fr) auto;align-items:center}
-  .bulk-actions{width:220px}
-  .activity-actions{max-width:330px}
-}
-
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+svg{display:block}
+.app{width:100%;height:100vh;height:100dvh;min-width:0;overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;background:radial-gradient(900px 420px at 50% -220px,rgba(108,137,255,.14),transparent 70%),var(--bg);padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+.topbar{min-width:0;min-height:66px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(38,50,65,.85);background:rgba(9,12,17,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.brand{min-width:0;display:flex;align-items:center;gap:11px}.logo{width:42px;height:42px;flex:0 0 42px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#809bff,#5774e9);box-shadow:0 10px 28px rgba(71,96,199,.24)}.logo svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}.brand-copy{min-width:0}.brand-title{display:block;font-size:15px;font-weight:850;letter-spacing:-.015em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.brand-sub{display:block;margin-top:2px;color:var(--muted);font-size:10.5px}
+.engine{min-width:0;max-width:43%;height:38px;padding:0 11px;border:1px solid var(--line);border-radius:999px;display:flex;align-items:center;gap:7px;background:rgba(16,21,29,.9);color:var(--muted);font-size:11px;font-weight:750}.engine .dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 4px rgba(240,189,105,.08)}.engine.ready .dot{background:var(--good);box-shadow:0 0 0 4px rgba(86,214,160,.08)}.engine.error .dot{background:var(--bad);box-shadow:0 0 0 4px rgba(255,118,127,.08)}.engine-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.content{min-width:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;padding:18px 14px 32px;scrollbar-width:none}.content::-webkit-scrollbar{display:none}.page{display:none;width:100%;max-width:var(--content);min-width:0;margin:0 auto}.page.active{display:block}.page-head{margin:2px 2px 18px;min-width:0}.eyebrow{margin-bottom:5px;color:#9eafff;font-size:10.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.page-title{margin:0;font-size:26px;line-height:1.12;letter-spacing:-.04em;font-weight:900}.page-sub{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.52;overflow-wrap:anywhere}
+.card{width:100%;min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,rgba(18,24,33,.98),rgba(15,20,28,.98));box-shadow:0 10px 32px rgba(0,0,0,.08)}.card+.card{margin-top:12px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.section-title strong{font-size:13px;font-weight:850}.section-title span{color:var(--muted);font-size:10.5px}.field{min-width:0}.field+.field{margin-top:14px}.label{display:block;margin:0 0 8px;color:var(--text-2);font-size:11.5px;font-weight:800}.help{margin-top:7px;color:var(--muted);font-size:10.5px;line-height:1.45;overflow-wrap:anywhere}
+.control{width:100%;min-width:0;height:var(--control);padding:0 14px;border:1px solid var(--line);border-radius:14px;background:#0b1017;color:var(--text);font-size:15px;line-height:1.2;outline:none;appearance:none;-webkit-appearance:none;overflow:hidden;text-overflow:ellipsis}.control::placeholder{color:#697586}.control:focus{border-color:#6d89f6;box-shadow:0 0 0 3px rgba(109,137,246,.12)}select.control{padding-right:44px;background-image:linear-gradient(45deg,transparent 50%,#a3adba 50%),linear-gradient(135deg,#a3adba 50%,transparent 50%);background-position:calc(100% - 21px) 27px,calc(100% - 16px) 27px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+.url-block{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:9px}.url-actions{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.icon-btn{min-width:0;min-height:50px;padding:8px 12px;border:1px solid var(--line);border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--surface-2);color:var(--text-2);font-size:12px;font-weight:820}.icon-btn:active{background:var(--surface-3)}.icon-btn svg{width:18px;height:18px;flex:0 0 18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.format-grid{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.format-card{min-width:0;min-height:76px;padding:10px 7px;border:1px solid var(--line);border-radius:15px;background:#0c1118;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center}.format-card.active{border-color:rgba(120,149,255,.68);background:linear-gradient(180deg,rgba(120,149,255,.16),rgba(89,119,239,.09));color:#edf1ff;box-shadow:inset 0 0 0 1px rgba(120,149,255,.08)}.format-card svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.format-card strong{font-size:12px;line-height:1;font-weight:900}.format-card small{font-size:9.5px;line-height:1.1;color:var(--muted);font-weight:700}.format-card.active small{color:#bfc9ee}.hidden-select{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}.speed-note{display:none;margin-top:10px;padding:10px 11px;border:1px solid rgba(86,214,160,.18);border-radius:12px;background:rgba(86,214,160,.07);color:#bdeed8;font-size:10.5px;line-height:1.42}.speed-note.show{display:block}
+.trim-head{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:14px}.trim-copy{min-width:0}.trim-copy strong{display:block;font-size:13.5px;font-weight:850}.trim-copy span{display:block;margin-top:4px;color:var(--muted);font-size:10.5px;line-height:1.45}.switch{position:relative;width:54px;height:32px;flex:0 0 54px}.switch input{position:absolute;opacity:0;pointer-events:none}.track{position:absolute;inset:0;border:1px solid var(--line-2);border-radius:999px;background:#252e3a;transition:.16s ease}.track:after{content:"";position:absolute;left:4px;top:4px;width:22px;height:22px;border-radius:50%;background:#9ba7b5;transition:.16s ease}.switch input:checked+.track{border-color:var(--accent);background:var(--accent-2)}.switch input:checked+.track:after{transform:translateX(22px);background:white}.trim-box{display:none;min-width:0;margin-top:15px;padding-top:15px;border-top:1px solid var(--line);gap:13px}.trim-box.visible{display:grid}.time-grid{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}.segment{min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;border:1px solid var(--line);border-radius:14px;background:#0a0f15}.segment.three{grid-template-columns:repeat(3,minmax(0,1fr))}.segment button{min-width:0;min-height:48px;padding:6px 8px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);font-size:11.5px;font-weight:850}.segment button.active{border-color:var(--line-2);background:var(--surface-3);color:var(--text)}.segment button[data-value="fast"].active{border-color:rgba(120,149,255,.55);background:var(--accent-soft);color:#e4eaff}
+.primary,.secondary,.ghost{width:100%;min-width:0;min-height:58px;padding:11px 15px;border-radius:15px;display:inline-flex;align-items:center;justify-content:center;gap:9px;text-align:center;font-size:13.5px;line-height:1.25;font-weight:900;border:1px solid transparent}.primary{background:linear-gradient(145deg,#7f9aff,#5875eb);color:#fff;box-shadow:0 10px 24px rgba(64,88,190,.24)}.primary:active{transform:translateY(1px)}.secondary{border-color:var(--line);background:var(--surface-2);color:var(--text)}.ghost{border-color:var(--line);background:transparent;color:var(--text-2)}button:disabled{opacity:.42;cursor:not-allowed;transform:none!important}.action-wrap{margin-top:14px}.primary svg,.secondary svg,.ghost svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.message{display:none;width:100%;min-width:0;margin-top:10px;padding:12px 13px;border-radius:13px;font-size:11px;line-height:1.48;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.message.show{display:block}.message.error{border:1px solid rgba(255,118,127,.28);background:rgba(255,118,127,.09);color:#ffd0d4}.message.info{border:1px solid rgba(120,149,255,.25);background:rgba(120,149,255,.09);color:#dde4ff}
+/* Pinned playlist */
+.pinned{position:relative;overflow:hidden;border-color:rgba(120,149,255,.34);background:linear-gradient(145deg,rgba(37,48,83,.78),rgba(16,22,32,.98) 62%)}.pinned:before{content:"";position:absolute;right:-60px;top:-80px;width:180px;height:180px;border-radius:50%;background:rgba(120,149,255,.12);filter:blur(2px)}.pinned-body{position:relative;z-index:1;min-width:0}.pinned-kicker{display:flex;align-items:center;gap:6px;color:#b5c1ff;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.pinned-kicker svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}.pinned-title{margin:8px 0 5px;font-size:18px;line-height:1.22;font-weight:900;letter-spacing:-.02em}.pinned-url{max-width:100%;color:var(--muted);font-size:10px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pinned-meta{margin-top:7px;color:#b7c0cf;font-size:10.5px}.pinned-actions{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 54px;gap:8px;margin-top:14px}.pinned-actions .primary{min-height:54px}.refresh-btn{width:54px;height:54px;border:1px solid var(--line-2);border-radius:14px;display:grid;place-items:center;background:rgba(20,27,38,.82);color:var(--text-2)}.refresh-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.custom-toggle{margin-top:12px}.custom-toggle button{width:100%;min-height:48px;border:1px dashed var(--line-2);border-radius:13px;background:transparent;color:var(--muted);font-size:11.5px;font-weight:800}.custom-box{display:none;margin-top:10px}.custom-box.visible{display:block}
+.playlist-tools{display:none;min-width:0;margin-top:12px}.playlist-tools.visible{display:block}.summary-card{padding:14px}.summary-top{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:11px}.summary-copy{min-width:0}.summary-copy strong{display:block;font-size:15px;line-height:1.25;overflow-wrap:anywhere}.summary-copy span{display:block;margin-top:4px;color:var(--muted);font-size:10.5px}.bulk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.bulk button{min-width:0;min-height:46px;padding:7px 9px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--text-2);font-size:11px;font-weight:850}.search-row{margin-top:11px;position:relative}.search-row svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:2}.search-row .control{height:50px;padding-left:41px;font-size:13px}
+.playlist-list{min-width:0;display:grid;gap:9px;margin-top:10px}.pitem{min-width:0;padding:13px;border:1px solid var(--line);border-radius:16px;background:var(--surface)}.pitem.skipped{opacity:.58}.pitem-head{min-width:0;display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;align-items:start}.num{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--surface-3);color:#b9c4d4;font-size:10px;font-weight:900;font-variant-numeric:tabular-nums}.pinfo{min-width:0}.ptitle{min-width:0;font-size:12px;line-height:1.4;font-weight:800;color:var(--text-2);overflow-wrap:anywhere;word-break:break-word}.pmeta{margin-top:4px;color:var(--muted);font-size:9.5px}.pmode{min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:11px;padding:4px;border:1px solid var(--line);border-radius:12px;background:#0a0f15}.pmode button{min-width:0;min-height:44px;padding:5px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font-size:10.5px;font-weight:900}.pmode button.active{border-color:var(--line-2);background:var(--surface-3);color:var(--text)}.pmode button[data-mode="trim"].active{border-color:rgba(120,149,255,.58);background:var(--accent-soft);color:#e6ebff}.pmode button[data-mode="skip"].active{border-color:rgba(255,118,127,.32);background:rgba(255,118,127,.10);color:#ffc6ca}.ptrim{display:none;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:9px}.ptrim.visible{display:grid}.ptrim .control{height:50px;font-size:13px}
+.playlist-options{display:grid;gap:13px;margin-top:10px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}.playlist-selected{font-size:12px;font-weight:850;color:var(--text-2)}.playlist-selected span{color:var(--muted);font-weight:650}.sticky-cta{position:sticky;bottom:8px;z-index:4;margin-top:10px;padding:9px;border:1px solid rgba(38,50,65,.9);border-radius:18px;background:rgba(9,12,17,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.empty{margin-top:12px;padding:25px 17px;border:1px dashed var(--line-2);border-radius:var(--radius);text-align:center;background:rgba(16,21,29,.58);color:var(--muted)}.empty svg{width:29px;height:29px;margin:0 auto 9px;fill:none;stroke:#9aa8ba;stroke-width:1.8}.empty strong{display:block;color:var(--text-2);font-size:12px}.empty span{display:block;margin-top:5px;font-size:10.5px;line-height:1.45}
+/* Activity */
+.activity{display:none;min-width:0;padding:11px 14px 12px;border-top:1px solid var(--line);background:rgba(12,16,23,.98)}.activity.show{display:block}.activity-top{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}.activity-copy{min-width:0}.activity-copy strong{display:block;font-size:11.5px;font-weight:900}.activity-copy span{display:-webkit-box;min-width:0;margin-top:3px;color:var(--muted);font-size:9.8px;line-height:1.38;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}.percent{color:var(--text-2);font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}.bar{height:7px;margin-top:9px;border-radius:999px;overflow:hidden;background:#242d39}.fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#6685f7,#89a1ff);transition:width .18s ease}.activity-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:9px}.activity-actions.two{grid-template-columns:repeat(2,minmax(0,1fr))}.activity-actions .ghost,.activity-actions .secondary{min-height:44px;font-size:11px;padding:7px 9px}
+.bottom-nav{min-width:0;min-height:68px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line);background:#0a0e14}.bottom-nav button{min-width:0;min-height:68px;padding:7px 8px;border:0;background:transparent;color:#7f8a99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10.5px;font-weight:800}.bottom-nav button.active{color:#d7dfff;background:linear-gradient(to top,rgba(120,149,255,.09),transparent)}.nav-icon{width:23px;height:23px}.nav-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:380px){.topbar{padding-left:11px;padding-right:11px}.content{padding-left:11px;padding-right:11px}.page-title{font-size:24px}.card{padding:14px}.format-card{min-height:72px}.format-card small{font-size:9px}.engine{max-width:39%;padding:0 9px}.pinned-title{font-size:17px}}
+@media(max-width:330px){.brand-sub{display:none}.engine{width:38px;max-width:38px;justify-content:center;padding:0}.engine-text{display:none}.url-actions,.time-grid,.ptrim{grid-template-columns:minmax(0,1fr)}.format-grid{gap:5px}.format-card{padding-left:4px;padding-right:4px}.format-card small{display:none}}
+@media(min-width:700px){.content{padding-top:22px}.summary-top{grid-template-columns:minmax(0,1fr) 220px;align-items:center}.page-title{font-size:29px}.activity-actions{max-width:360px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <div class="app">
   <header class="topbar">
     <div class="brand">
-      <div class="logo" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7.5 10 4.5 4.5 4.5-4.5"></path><path d="M5 19h14"></path></svg>
-      </div>
-      <div class="brand-copy">
-        <span class="brand-title">Media Downloader</span>
-        <span class="brand-sub">v0.1.7 beta</span>
-      </div>
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v10"></path><path d="m8 10 4 4 4-4"></path><path d="M5 19h14"></path></svg></div>
+      <div class="brand-copy"><span class="brand-title">Media Downloader</span><span class="brand-sub">v0.1.8 beta · Turbo build</span></div>
     </div>
-    <div id="engine" class="engine-pill" aria-live="polite"><span class="dot"></span><span class="engine-text">Starting engine</span></div>
+    <div id="engine" class="engine" aria-live="polite"><span class="dot"></span><span class="engine-text">Starting</span></div>
   </header>
 
   <main class="content">
     <section id="download-page" class="page active">
-      <div class="page-head">
-        <div class="eyebrow">Single file</div>
-        <h1 class="page-title">Download one link</h1>
-        <p class="page-sub">Paste a media link, choose the output, and start the download.</p>
-      </div>
+      <div class="page-head"><div class="eyebrow">Quick download</div><h1 class="page-title">Save a file</h1><p class="page-sub">Paste a link, choose the format, and download. Fast paths are used automatically where possible.</p></div>
 
       <div class="card">
         <div class="field">
           <label class="label" for="single-url">Media link</label>
-          <div class="url-row">
+          <div class="url-block">
             <input id="single-url" class="control" type="url" placeholder="Paste a YouTube or media link" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
-            <button class="clear-button" type="button" onclick="clearUrl('single-url')">Clear</button>
+            <div class="url-actions">
+              <button class="icon-btn" type="button" onclick="pasteUrl('single-url')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="M9 5H7a2 2 0 0 0-2 2v12h14V7a2 2 0 0 0-2-2h-2"></path></svg>Paste</button>
+              <button class="icon-btn" type="button" onclick="clearUrl('single-url')"><svg viewBox="0 0 24 24"><path d="m7 7 10 10"></path><path d="m17 7-10 10"></path></svg>Clear</button>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <div class="field">
-          <label class="label">Output format</label>
-          <div id="single-format-tabs" class="format-tabs">
-            <button id="single-format-mp3" class="active" type="button" onclick="setFormat('single','mp3')">
-              <span class="format-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg></span>
-              <span class="format-copy"><strong>Audio</strong><small>MP3</small></span>
-            </button>
-            <button id="single-format-mp4" type="button" onclick="setFormat('single','mp4')">
-              <span class="format-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m10 9 5 3-5 3z"></path></svg></span>
-              <span class="format-copy"><strong>Video</strong><small>MP4</small></span>
-            </button>
-          </div>
-          <select id="single-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="mp4">MP4</option></select>
+        <div class="section-title"><strong>Format</strong><span>Choose what you need</span></div>
+        <div id="single-format-grid" class="format-grid">
+          <button id="single-format-mp3" class="format-card active" type="button" onclick="setFormat('single','mp3')"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg><strong>MP3</strong><small>Compatible audio</small></button>
+          <button id="single-format-m4a" class="format-card" type="button" onclick="setFormat('single','m4a')"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg><strong>M4A</strong><small>Fast audio</small></button>
+          <button id="single-format-mp4" class="format-card" type="button" onclick="setFormat('single','mp4')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m10 9 5 3-5 3z"></path></svg><strong>MP4</strong><small>Video</small></button>
         </div>
-        <div class="field">
-          <label class="label" for="single-quality">Quality</label>
-          <select id="single-quality" class="control"></select>
-        </div>
+        <select id="single-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="m4a">M4A</option><option value="mp4">MP4</option></select>
+        <div class="field"><label class="label" for="single-quality">Quality</label><select id="single-quality" class="control"></select></div>
+        <div id="single-speed-note" class="speed-note"></div>
       </div>
 
       <div class="card">
-        <div class="trim-row">
-          <div class="trim-copy">
-            <strong>Trim this download</strong>
-            <span>Download only the part you need.</span>
-          </div>
-          <label class="switch" aria-label="Trim this download"><input id="single-trim" type="checkbox" onchange="toggleSingleTrim()"><span class="track"></span></label>
-        </div>
-
+        <div class="trim-head"><div class="trim-copy"><strong>Trim this download</strong><span>Only download the section you need.</span></div><label class="switch" aria-label="Trim this download"><input id="single-trim" type="checkbox" onchange="toggleSingleTrim()"><span class="track"></span></label></div>
         <div id="single-trim-box" class="trim-box">
-          <div>
-            <div class="time-grid">
-              <div><label class="label" for="single-start">Start time</label><input id="single-start" class="control" placeholder="01:30" autocomplete="off" inputmode="decimal"></div>
-              <div><label class="label" for="single-end">End time</label><input id="single-end" class="control" placeholder="05:45" autocomplete="off" inputmode="decimal"></div>
-            </div>
-            <div class="help">Use seconds, MM:SS, or HH:MM:SS.</div>
+          <div class="time-grid">
+            <div><label class="label" for="single-start">Start</label><input id="single-start" class="control" placeholder="01:30" autocomplete="off" inputmode="decimal"></div>
+            <div><label class="label" for="single-end">End</label><input id="single-end" class="control" placeholder="05:45" autocomplete="off" inputmode="decimal"></div>
           </div>
-          <div>
-            <label class="label">Trim method</label>
-            <div id="single-trim-seg" class="segment">
-              <button class="active" data-value="fast" type="button" onclick="setTrimMode('single','fast')">Fast</button>
-              <button data-value="exact" type="button" onclick="setTrimMode('single','exact')">Precise</button>
-            </div>
-            <input id="single-trim-mode" type="hidden" value="fast">
-            <div class="help">Fast is quicker. Precise re-encodes when needed for accurate cut points.</div>
-          </div>
+          <div class="help">Seconds, MM:SS, or HH:MM:SS.</div>
+          <div><label class="label">Trim method</label><div id="single-trim-seg" class="segment"><button class="active" data-value="fast" type="button" onclick="setTrimMode('single','fast')">Fast</button><button data-value="exact" type="button" onclick="setTrimMode('single','exact')">Precise</button></div><input id="single-trim-mode" type="hidden" value="fast"><div class="help">Fast avoids re-encoding where possible. Precise can take much longer.</div></div>
         </div>
       </div>
 
-      <div class="action-wrap"><button id="single-download" class="primary" type="button" onclick="startSingle()" disabled>Start download</button></div>
-      <div id="download-error" class="message error"></div>
-      <div id="download-info" class="message info"></div>
+      <div class="action-wrap"><button id="single-download" class="primary" type="button" onclick="startSingle()" disabled><svg viewBox="0 0 24 24"><path d="M12 3v10"></path><path d="m8 10 4 4 4-4"></path><path d="M5 19h14"></path></svg>Start download</button></div>
+      <div id="download-error" class="message error"></div><div id="download-info" class="message info"></div>
     </section>
 
     <section id="playlist-page" class="page">
-      <div class="page-head">
-        <div class="eyebrow">Playlist</div>
-        <h1 class="page-title">Download a playlist</h1>
-        <p class="page-sub">Load the playlist, then keep, trim, or skip each item before downloading.</p>
+      <div class="page-head"><div class="eyebrow">Playlist</div><h1 class="page-title">Your saved playlist</h1><p class="page-sub">Your regular playlist is pinned here. After the first load, the item list is cached so it can reopen instantly.</p></div>
+
+      <div class="card pinned">
+        <div class="pinned-body">
+          <div class="pinned-kicker"><svg viewBox="0 0 24 24"><path d="m12 17 5 5v-8l3-3V9H4v2l3 3v8z"></path></svg>Pinned playlist</div>
+          <div id="preset-title" class="pinned-title">My YouTube Playlist</div>
+          <div id="preset-url-label" class="pinned-url"></div>
+          <div id="preset-meta" class="pinned-meta">Ready to load</div>
+        </div>
+        <div class="pinned-actions"><button id="preset-open" class="primary" type="button" onclick="openPresetPlaylist()" disabled>Load saved playlist</button><button id="preset-refresh" class="refresh-btn" type="button" onclick="refreshPresetPlaylist()" disabled aria-label="Refresh saved playlist"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5"></path><path d="M4 18v-5h5"></path><path d="M18.5 9a7 7 0 0 0-12-2L4 9"></path><path d="M5.5 15a7 7 0 0 0 12 2l2.5-2"></path></svg></button></div>
+      </div>
+
+      <div class="custom-toggle"><button type="button" onclick="toggleCustomPlaylist()">Use a different playlist link</button></div>
+      <div id="custom-playlist-box" class="custom-box card">
+        <div class="field"><label class="label" for="playlist-url">Playlist link</label><div class="url-block"><input id="playlist-url" class="control" type="url" placeholder="Paste a playlist link" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url"><div class="url-actions"><button class="icon-btn" type="button" onclick="pasteUrl('playlist-url')"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="M9 5H7a2 2 0 0 0-2 2v12h14V7a2 2 0 0 0-2-2h-2"></path></svg>Paste</button><button class="icon-btn" type="button" onclick="clearUrl('playlist-url')"><svg viewBox="0 0 24 24"><path d="m7 7 10 10"></path><path d="m17 7-10 10"></path></svg>Clear</button></div></div></div>
+        <div class="action-wrap"><button id="load-playlist" class="secondary" type="button" onclick="loadPlaylist()" disabled>Load this playlist</button></div>
       </div>
 
       <div class="card">
-        <div class="field">
-          <label class="label" for="playlist-url">Playlist link</label>
-          <div class="url-row">
-            <input id="playlist-url" class="control" type="url" placeholder="Paste a playlist link" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="url">
-            <button class="clear-button" type="button" onclick="clearUrl('playlist-url')">Clear</button>
-          </div>
+        <div class="section-title"><strong>Format</strong><span>Used for selected items</span></div>
+        <div id="playlist-format-grid" class="format-grid">
+          <button id="playlist-format-mp3" class="format-card active" type="button" onclick="setFormat('playlist','mp3')"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg><strong>MP3</strong><small>Compatible audio</small></button>
+          <button id="playlist-format-m4a" class="format-card" type="button" onclick="setFormat('playlist','m4a')"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg><strong>M4A</strong><small>Fast audio</small></button>
+          <button id="playlist-format-mp4" class="format-card" type="button" onclick="setFormat('playlist','mp4')"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m10 9 5 3-5 3z"></path></svg><strong>MP4</strong><small>Video</small></button>
         </div>
-        <div class="action-wrap"><button id="load-playlist" class="secondary" type="button" onclick="loadPlaylist()" disabled>Load playlist</button></div>
-      </div>
-
-      <div class="card">
-        <div class="field">
-          <label class="label">Output format</label>
-          <div id="playlist-format-tabs" class="format-tabs">
-            <button id="playlist-format-mp3" class="active" type="button" onclick="setFormat('playlist','mp3')">
-              <span class="format-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18V5l10-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="16" cy="16" r="3"></circle></svg></span>
-              <span class="format-copy"><strong>Audio</strong><small>MP3</small></span>
-            </button>
-            <button id="playlist-format-mp4" type="button" onclick="setFormat('playlist','mp4')">
-              <span class="format-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m10 9 5 3-5 3z"></path></svg></span>
-              <span class="format-copy"><strong>Video</strong><small>MP4</small></span>
-            </button>
-          </div>
-          <select id="playlist-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="mp4">MP4</option></select>
-        </div>
+        <select id="playlist-format" class="hidden-select" aria-hidden="true"><option value="mp3">MP3</option><option value="m4a">M4A</option><option value="mp4">MP4</option></select>
         <div class="field"><label class="label" for="playlist-quality">Quality</label><select id="playlist-quality" class="control"></select></div>
+        <div id="playlist-speed-note" class="speed-note"></div>
       </div>
 
-      <div id="playlist-error" class="message error"></div>
-      <div id="playlist-info" class="message info"></div>
+      <div id="playlist-error" class="message error"></div><div id="playlist-info" class="message info"></div>
+      <div id="playlist-empty" class="empty"><svg viewBox="0 0 24 24"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg><strong>No items loaded yet</strong><span>Tap Load saved playlist above. Your cached list will reopen instantly next time.</span></div>
 
-      <div id="playlist-empty" class="playlist-empty">
-        <div class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path><path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path></svg></div>
-        <strong>No playlist loaded</strong>
-        <span>Paste a playlist link above and tap Load playlist.</span>
-      </div>
-
-      <div id="playlist-head" class="playlist-head">
-        <div class="playlist-summary">
-          <div class="playlist-summary-top">
-            <div class="playlist-summary-title"><strong id="playlist-title">Playlist</strong><span id="playlist-meta">0 items</span></div>
-            <div class="bulk-actions">
-              <button class="small-action" type="button" onclick="setAll('full')">Keep all</button>
-              <button class="small-action" type="button" onclick="setAll('skip')">Skip all</button>
-            </div>
-          </div>
+      <div id="playlist-tools" class="playlist-tools">
+        <div class="card summary-card">
+          <div class="summary-top"><div class="summary-copy"><strong id="playlist-title">Playlist</strong><span id="playlist-meta">0 items</span></div><div class="bulk"><button type="button" onclick="setAll('full')">Keep all</button><button type="button" onclick="setAll('skip')">Skip all</button></div></div>
+          <div class="search-row"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input id="playlist-search" class="control" type="search" placeholder="Search playlist items" oninput="renderPlaylistList()"></div>
         </div>
-
         <div id="playlist-list" class="playlist-list"></div>
-
         <div class="playlist-options">
           <div id="playlist-selected" class="playlist-selected">0 selected</div>
-          <div>
-            <label class="label">Trim method for trimmed items</label>
-            <div id="playlist-trim-seg" class="segment">
-              <button class="active" data-value="fast" type="button" onclick="setTrimMode('playlist','fast')">Fast</button>
-              <button data-value="exact" type="button" onclick="setTrimMode('playlist','exact')">Precise</button>
-            </div>
-            <input id="playlist-trim-mode" type="hidden" value="fast">
-          </div>
-          <div>
-            <label class="label">Playlist output</label>
-            <div id="playlist-package-seg" class="segment">
-              <button class="active" data-value="folder" type="button" onclick="setPackageMode('folder')">Save as folder</button>
-              <button data-value="zip" type="button" onclick="setPackageMode('zip')">Create ZIP</button>
-            </div>
-            <input id="playlist-package-mode" type="hidden" value="folder">
-            <div class="help">Folder is fastest. ZIP is optional and adds a packaging step after downloading.</div>
-          </div>
+          <div><label class="label">Trim method for trimmed items</label><div id="playlist-trim-seg" class="segment"><button class="active" data-value="fast" type="button" onclick="setTrimMode('playlist','fast')">Fast</button><button data-value="exact" type="button" onclick="setTrimMode('playlist','exact')">Precise</button></div><input id="playlist-trim-mode" type="hidden" value="fast"></div>
+          <div><label class="label">Playlist output</label><div id="playlist-package-seg" class="segment"><button class="active" data-value="folder" type="button" onclick="setPackageMode('folder')">Save as folder</button><button data-value="zip" type="button" onclick="setPackageMode('zip')">Create ZIP</button></div><input id="playlist-package-mode" type="hidden" value="folder"><div class="help">Folder mode saves each finished file immediately while other items continue downloading. It is the fastest option.</div></div>
         </div>
-
         <div class="sticky-cta"><button id="playlist-download" class="primary" type="button" onclick="startPlaylist()" disabled>Download selected</button></div>
       </div>
     </section>
   </main>
 
   <section id="activity" class="activity" aria-live="polite">
-    <div class="activity-top">
-      <div class="activity-copy"><strong id="activity-title">Download</strong><span id="activity-status">Preparing...</span></div>
-      <div id="activity-percent" class="percent">0%</div>
-    </div>
+    <div class="activity-top"><div class="activity-copy"><strong id="activity-title">Download</strong><span id="activity-status">Preparing…</span></div><div id="activity-percent" class="percent">0%</div></div>
     <div class="bar"><div id="activity-fill" class="fill"></div></div>
-    <div id="activity-actions" class="activity-actions">
-      <button id="cancel-btn" class="ghost" type="button" onclick="cancelJob()">Cancel</button>
-      <button id="open-btn" class="secondary" type="button" onclick="openDownloads()" style="display:none">Open Downloads</button>
-    </div>
+    <div id="activity-actions" class="activity-actions"><button id="cancel-btn" class="ghost" type="button" onclick="cancelJob()">Cancel</button><button id="open-btn" class="secondary" type="button" onclick="openDownloads()" style="display:none">Open Downloads</button></div>
   </section>
 
   <nav class="bottom-nav" aria-label="Main navigation">
-    <button id="nav-download" class="active" type="button" onclick="switchPage('download')">
-      <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v11"></path><path d="m7.5 10 4.5 4.5 4.5-4.5"></path><path d="M5 19h14"></path></svg></span>
-      <span>Download</span>
-    </button>
-    <button id="nav-playlist" type="button" onclick="switchPage('playlist')">
-      <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M4 6h.01"></path><path d="M4 12h.01"></path><path d="M4 18h.01"></path></svg></span>
-      <span>Playlist</span>
-    </button>
+    <button id="nav-download" class="active" type="button" onclick="switchPage('download')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M12 3v10"></path><path d="m8 10 4 4 4-4"></path><path d="M5 19h14"></path></svg></span><span>Download</span></button>
+    <button id="nav-playlist" type="button" onclick="switchPage('playlist')"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M9 6h11"></path><path d="M9 12h11"></path><path d="M9 18h11"></path><path d="M4 6h.01"></path><path d="M4 12h.01"></path><path d="M4 18h.01"></path></svg></span><span>Playlist</span></button>
   </nav>
 </div>
-
 <script>
-const quality={
-  mp3:[['192 kbps','192'],['256 kbps','256'],['320 kbps','320']],
-  mp4:[['Best available','best'],['1080p','1080'],['720p','720'],['480p','480'],['360p','360']]
-};
-let ready=false,busy=false,playlist=[],playlistTitle='Playlist';
+const PRESET_PLAYLIST_URL='https://youtube.com/playlist?list=PLUtowSKL77PM&si=-S-AgpEWXfbULz_7';
+let presetAutoRequested=false;
+let playlistInspectBusy=false;
+let presetAutoLoading=false;
+const CACHE_KEY='media-downloader-preset-playlist-v1';
+const LAST_PAGE_KEY='media-downloader-last-page-v1';
+const quality={mp3:[['192 kbps','192'],['256 kbps','256'],['320 kbps','320']],m4a:[['Best available','best']],mp4:[['Best available','best'],['1080p','1080'],['720p','720'],['480p','480'],['360p · fastest','360']]};
+let ready=false,busy=false,playlist=[],playlistTitle='Playlist',loadedPlaylistUrl='';
 const messageTimers={};
 function $(id){return document.getElementById(id)}
-function clearUrl(id){const el=$(id);el.value='';el.focus()}
-function fillQuality(scope){
-  const fmt=$(scope+'-format').value,sel=$(scope+'-quality');
-  sel.innerHTML='';
-  quality[fmt].forEach(([label,value])=>{const o=document.createElement('option');o.value=value;o.textContent=label;sel.appendChild(o)});
-}
-function setFormat(scope,fmt){
-  $(scope+'-format').value=fmt;
-  ['mp3','mp4'].forEach(v=>$(scope+'-format-'+v).classList.toggle('active',v===fmt));
-  fillQuality(scope);
-}
-fillQuality('single');fillQuality('playlist');
-function switchPage(name){
-  ['download','playlist'].forEach(p=>{
-    $(p+'-page').classList.toggle('active',p===name);
-    $('nav-'+p).classList.toggle('active',p===name);
-  });
-  document.querySelector('.content')?.scrollTo?.({top:0,behavior:'auto'});
-}
-function toggleSingleTrim(){$('single-trim-box').classList.toggle('visible',$('single-trim').checked)}
-function setTrimMode(scope,val){
-  $(scope+'-trim-mode').value=val;
-  [...$(scope+'-trim-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val));
-}
-function setPackageMode(val){
-  $('playlist-package-mode').value=val;
-  [...$('playlist-package-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val));
-}
-function setBusy(v){
-  busy=v;
-  $('single-download').disabled=v||!ready;
-  $('load-playlist').disabled=v||!ready;
-  updatePlaylistButton();
-}
-function msg(scope,type,text){
-  const id=scope+'-'+type,e=$(id);
-  if(messageTimers[id])clearTimeout(messageTimers[id]);
-  e.textContent=text;e.classList.add('show');
-  messageTimers[id]=setTimeout(()=>e.classList.remove('show'),7000);
-}
-function clearMsg(scope){['error','info'].forEach(t=>$(scope+'-'+t).classList.remove('show'))}
-function parseTime(v){
-  v=v.trim();if(!v)return null;
-  if(/^\d+(\.\d+)?$/.test(v))return Number(v);
-  const p=v.split(':').map(Number);if(p.some(Number.isNaN)||p.length>3)return NaN;
-  let s=0;for(const n of p)s=s*60+n;return s;
-}
-function validateRange(start,end){
-  const s=parseTime(start),e=parseTime(end);
-  if(Number.isNaN(s)||Number.isNaN(e))throw Error('Use seconds, MM:SS or HH:MM:SS for trim times.');
-  if(s!==null&&e!==null&&e<=s)throw Error('End time must be later than start time.');
-}
-function startSingle(){
-  clearMsg('download');
-  if(!ready)return msg('download','error','Downloader engine is still starting.');
-  const url=$('single-url').value.trim();if(!url)return msg('download','error','Paste a media link first.');
-  const trim=$('single-trim').checked;
-  try{if(trim)validateRange($('single-start').value,$('single-end').value)}catch(e){return msg('download','error',e.message)}
-  const payload={url,format:$('single-format').value,quality:$('single-quality').value,mode:trim?'trim':'full',start:trim?$('single-start').value.trim():'',end:trim?$('single-end').value.trim():'',trim_mode:$('single-trim-mode').value};
-  setBusy(true);showActivity('Media download','Starting download...',0);AndroidApp.startSingle(JSON.stringify(payload));
-}
-function loadPlaylist(){
-  clearMsg('playlist');
-  const url=$('playlist-url').value.trim();if(!url)return msg('playlist','error','Paste a playlist link first.');
-  $('load-playlist').disabled=true;msg('playlist','info','Loading playlist...');AndroidApp.inspectPlaylist(url);
-}
-function renderPlaylist(){
-  const head=$('playlist-head'),empty=$('playlist-empty'),list=$('playlist-list');
-  if(!playlist.length){head.classList.remove('visible');empty.style.display='block';list.innerHTML='';return}
-  empty.style.display='none';head.classList.add('visible');
-  $('playlist-title').textContent=playlistTitle;$('playlist-meta').textContent=`${playlist.length} item${playlist.length===1?'':'s'}`;
-  list.innerHTML=playlist.map((it,i)=>rowHtml(it,i)).join('');updateSelected();updatePlaylistButton();
-}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function rowHtml(it,i){
-  const skip=it.mode==='skip'?'skipped':'',trim=it.mode==='trim'?'visible':'';
-  return `<div class="pitem ${skip}">
-    <div class="pitem-head"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="ptitle">${esc(it.title)}</div></div>
-    <div class="pmode">
-      <button data-mode="full" class="${it.mode==='full'?'active':''}" onclick="itemMode(${i},'full')">Full</button>
-      <button data-mode="trim" class="${it.mode==='trim'?'active':''}" onclick="itemMode(${i},'trim')">Trim</button>
-      <button data-mode="skip" class="${it.mode==='skip'?'active':''}" onclick="itemMode(${i},'skip')">Skip</button>
-    </div>
-    <div class="ptrim ${trim}">
-      <input class="control" placeholder="Start 01:30" value="${esc(it.start)}" autocomplete="off" inputmode="decimal" oninput="itemTime(${i},'start',this.value)">
-      <input class="control" placeholder="End 05:45" value="${esc(it.end)}" autocomplete="off" inputmode="decimal" oninput="itemTime(${i},'end',this.value)">
-    </div>
-  </div>`;
+function normalizeUrl(v){return String(v||'').trim()}
+function clearUrl(id){const el=$(id);el.value='';el.focus()}
+function pasteUrl(id){
+  try{
+    const text=window.AndroidApp&&AndroidApp.getClipboardText?String(AndroidApp.getClipboardText()||''):'';
+    const match=text.match(/https?:\/\/\S+/i);const value=(match?match[0]:text).trim();
+    if(!value)return msg(id==='playlist-url'?'playlist':'download','error','Clipboard does not contain a link.');
+    $(id).value=value;
+  }catch(e){msg(id==='playlist-url'?'playlist':'download','error','Could not read the clipboard.');}
 }
-function itemMode(i,m){playlist[i].mode=m;if(m!=='trim'){playlist[i].start='';playlist[i].end=''}renderPlaylist()}
+function fillQuality(scope){const fmt=$(scope+'-format').value,sel=$(scope+'-quality');sel.innerHTML='';(quality[fmt]||quality.mp3).forEach(([label,value])=>{const o=document.createElement('option');o.value=value;o.textContent=label;sel.appendChild(o)});updateSpeedNote(scope)}
+function setFormat(scope,fmt){$(scope+'-format').value=fmt;['mp3','m4a','mp4'].forEach(v=>$(scope+'-format-'+v).classList.toggle('active',v===fmt));fillQuality(scope)}
+function updateSpeedNote(scope){const fmt=$(scope+'-format').value,n=$(scope+'-speed-note');let text='';if(fmt==='m4a')text='Fastest audio option: keeps M4A/AAC directly when available, avoiding MP3 conversion.';if(fmt==='mp4')text='For the shortest video processing, choose 360p when suitable; YouTube often provides a ready-made combined MP4 stream.';n.textContent=text;n.classList.toggle('show',!!text)}
+function switchPage(name){['download','playlist'].forEach(p=>{$(p+'-page').classList.toggle('active',p===name);$('nav-'+p).classList.toggle('active',p===name)});try{localStorage.setItem(LAST_PAGE_KEY,name)}catch(e){}document.querySelector('.content')?.scrollTo?.({top:0,behavior:'auto'})}
+function toggleSingleTrim(){$('single-trim-box').classList.toggle('visible',$('single-trim').checked)}
+function setTrimMode(scope,val){$(scope+'-trim-mode').value=val;[...$(scope+'-trim-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val))}
+function setPackageMode(val){$('playlist-package-mode').value=val;[...$('playlist-package-seg').querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===val))}
+function toggleCustomPlaylist(){$('custom-playlist-box').classList.toggle('visible')}
+function setBusy(v){busy=v;$('single-download').disabled=v||!ready;$('load-playlist').disabled=v||!ready;$('preset-open').disabled=v||!ready;$('preset-refresh').disabled=v||!ready;updatePlaylistButton()}
+function msg(scope,type,text){const id=scope+'-'+type,e=$(id);if(messageTimers[id])clearTimeout(messageTimers[id]);e.textContent=text;e.classList.add('show');messageTimers[id]=setTimeout(()=>e.classList.remove('show'),7000)}
+function clearMsg(scope){['error','info'].forEach(t=>$(scope+'-'+t).classList.remove('show'))}
+function parseTime(v){v=String(v||'').trim();if(!v)return null;if(/^\d+(\.\d+)?$/.test(v))return Number(v);const p=v.split(':').map(Number);if(p.some(Number.isNaN)||p.length>3)return NaN;let s=0;for(const n of p)s=s*60+n;return s}
+function validateRange(start,end){const s=parseTime(start),e=parseTime(end);if(Number.isNaN(s)||Number.isNaN(e))throw Error('Use seconds, MM:SS or HH:MM:SS for trim times.');if(s!==null&&e!==null&&e<=s)throw Error('End time must be later than start time.')}
+function startSingle(){clearMsg('download');if(!ready)return msg('download','error','Downloader engine is still starting.');const url=$('single-url').value.trim();if(!url)return msg('download','error','Paste a media link first.');const trim=$('single-trim').checked;try{if(trim)validateRange($('single-start').value,$('single-end').value)}catch(e){return msg('download','error',e.message)}const payload={url,format:$('single-format').value,quality:$('single-quality').value,mode:trim?'trim':'full',start:trim?$('single-start').value.trim():'',end:trim?$('single-end').value.trim():'',trim_mode:$('single-trim-mode').value};setBusy(true);showActivity('Media download','Starting download…',0);AndroidApp.startSingle(JSON.stringify(payload))}
+function isPresetUrl(url){try{const u=new URL(url);return u.searchParams.get('list')==='PLUtowSKL77PM'}catch(e){return String(url||'').includes('PLUtowSKL77PM')}}
+function loadPlaylist(forcePreset=false){clearMsg('playlist');const url=forcePreset?PRESET_PLAYLIST_URL:$('playlist-url').value.trim();if(!url)return msg('playlist','error','Paste a playlist link first.');if(!ready)return msg('playlist','error','Downloader engine is still starting.');loadedPlaylistUrl=url;$('playlist-url').value=url;playlistInspectBusy=true;setBusy(true);msg('playlist','info','Loading playlist…');AndroidApp.inspectPlaylist(url)}
+function maybeAutoPreloadPreset(){
+  if(!ready||presetAutoRequested)return;
+  const cached=readPresetCache();
+  if(cached&&Array.isArray(cached.items)&&cached.items.length)return;
+  presetAutoRequested=true;presetAutoLoading=true;loadedPlaylistUrl=PRESET_PLAYLIST_URL;$('playlist-url').value=PRESET_PLAYLIST_URL;
+  try{AndroidApp.inspectPlaylist(PRESET_PLAYLIST_URL)}catch(e){presetAutoLoading=false}
+}
+function openPresetPlaylist(){
+  const cached=readPresetCache();
+  if(cached&&Array.isArray(cached.items)&&cached.items.length){applyPlaylist(cached.title||'Saved playlist',cached.items,PRESET_PLAYLIST_URL,false);$('playlist-tools').scrollIntoView?.({behavior:'smooth',block:'start'});return}
+  loadPlaylist(true);
+}
+function refreshPresetPlaylist(){loadPlaylist(true)}
+function readPresetCache(){try{return JSON.parse(localStorage.getItem(CACHE_KEY)||'null')}catch(e){return null}}
+function savePresetCache(){if(!isPresetUrl(loadedPlaylistUrl)||!playlist.length)return;try{localStorage.setItem(CACHE_KEY,JSON.stringify({url:PRESET_PLAYLIST_URL,title:playlistTitle,items:playlist.map(({position,id,title,url,duration})=>({position,id,title,url,duration})),cachedAt:Date.now()}))}catch(e){}updatePresetCard()}
+function updatePresetCard(){const c=readPresetCache();$('preset-url-label').textContent=PRESET_PLAYLIST_URL;if(c&&Array.isArray(c.items)&&c.items.length){$('preset-title').textContent=c.title||'My YouTube Playlist';$('preset-meta').textContent=`${c.items.length} cached item${c.items.length===1?'':'s'} · opens instantly`;$('preset-open').textContent='Open saved playlist'}else{$('preset-title').textContent='My YouTube Playlist';$('preset-meta').textContent='Ready to load';$('preset-open').textContent='Load saved playlist'}}
+function formatDuration(sec){sec=Math.round(Number(sec)||0);if(!sec)return'';const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`}
+function applyPlaylist(title,items,url,writeCache=true){playlistTitle=title||'Playlist';loadedPlaylistUrl=url||loadedPlaylistUrl||$('playlist-url').value.trim();playlist=(items||[]).map((x,i)=>({...x,position:x.position||i+1,mode:'full',start:'',end:''}));renderPlaylist();if(writeCache)savePresetCache()}
+function renderPlaylist(){const tools=$('playlist-tools'),empty=$('playlist-empty');if(!playlist.length){tools.classList.remove('visible');empty.style.display='block';$('playlist-list').innerHTML='';return}empty.style.display='none';tools.classList.add('visible');$('playlist-title').textContent=playlistTitle;$('playlist-meta').textContent=`${playlist.length} item${playlist.length===1?'':'s'}`;renderPlaylistList();updateSelected();updatePlaylistButton()}
+function renderPlaylistList(){const list=$('playlist-list');if(!playlist.length){list.innerHTML='';return}const q=$('playlist-search').value.trim().toLowerCase();const rows=playlist.map((it,i)=>({it,i})).filter(({it})=>!q||String(it.title||'').toLowerCase().includes(q));list.innerHTML=rows.length?rows.map(({it,i})=>rowHtml(it,i)).join(''):'<div class="empty"><strong>No matching items</strong><span>Try a different search.</span></div>'}
+function rowHtml(it,i){const skip=it.mode==='skip'?'skipped':'',trim=it.mode==='trim'?'visible':'',dur=formatDuration(it.duration);return `<div class="pitem ${skip}"><div class="pitem-head"><div class="num">${String(i+1).padStart(2,'0')}</div><div class="pinfo"><div class="ptitle">${esc(it.title)}</div><div class="pmeta">${dur?esc(dur)+' · ':''}${it.mode==='skip'?'Skipped':it.mode==='trim'?'Trimmed':'Full file'}</div></div></div><div class="pmode"><button data-mode="full" class="${it.mode==='full'?'active':''}" onclick="itemMode(${i},'full')">Full</button><button data-mode="trim" class="${it.mode==='trim'?'active':''}" onclick="itemMode(${i},'trim')">Trim</button><button data-mode="skip" class="${it.mode==='skip'?'active':''}" onclick="itemMode(${i},'skip')">Skip</button></div><div class="ptrim ${trim}"><input class="control" placeholder="Start 01:30" value="${esc(it.start)}" autocomplete="off" inputmode="decimal" oninput="itemTime(${i},'start',this.value)"><input class="control" placeholder="End 05:45" value="${esc(it.end)}" autocomplete="off" inputmode="decimal" oninput="itemTime(${i},'end',this.value)"></div></div>`}
+function itemMode(i,m){playlist[i].mode=m;if(m!=='trim'){playlist[i].start='';playlist[i].end=''}renderPlaylistList();updateSelected();updatePlaylistButton()}
 function itemTime(i,k,v){playlist[i][k]=v}
-function setAll(m){playlist.forEach(it=>{it.mode=m;if(m!=='trim'){it.start='';it.end=''}});renderPlaylist()}
-function updateSelected(){
-  const selected=playlist.filter(x=>x.mode!=='skip').length,trimmed=playlist.filter(x=>x.mode==='trim').length;
-  $('playlist-selected').innerHTML=`${selected} selected <span>${trimmed?`&middot; ${trimmed} trimmed`:''}</span>`;
-  $('playlist-download').textContent=selected?`Download ${selected} file${selected===1?'':'s'}`:'Download selected';
-}
+function setAll(m){playlist.forEach(it=>{it.mode=m;if(m!=='trim'){it.start='';it.end=''}});renderPlaylistList();updateSelected();updatePlaylistButton()}
+function updateSelected(){const selected=playlist.filter(x=>x.mode!=='skip').length,trimmed=playlist.filter(x=>x.mode==='trim').length;$('playlist-selected').innerHTML=`${selected} selected <span>${trimmed?`· ${trimmed} trimmed`:''}</span>`;$('playlist-download').textContent=selected?`Download ${selected} file${selected===1?'':'s'}`:'Download selected'}
 function updatePlaylistButton(){const n=playlist.filter(x=>x.mode!=='skip').length;$('playlist-download').disabled=busy||!ready||n===0}
-function startPlaylist(){
-  clearMsg('playlist');
-  const selected=playlist.filter(x=>x.mode!=='skip');if(!selected.length)return msg('playlist','error','Select at least one item.');
-  try{playlist.filter(x=>x.mode==='trim').forEach(x=>validateRange(x.start,x.end))}catch(e){return msg('playlist','error',e.message)}
-  const payload={title:playlistTitle,format:$('playlist-format').value,quality:$('playlist-quality').value,trim_mode:$('playlist-trim-mode').value,package_mode:$('playlist-package-mode').value,items:playlist.map(x=>({url:x.url,title:x.title,mode:x.mode,start:x.start||'',end:x.end||''}))};
-  setBusy(true);showActivity('Playlist download',`Starting ${selected.length} item${selected.length===1?'':'s'}...`,0);AndroidApp.startPlaylist(JSON.stringify(payload));
-}
-function syncActivityButtons(){
-  const actions=$('activity-actions');
-  const visible=[...actions.querySelectorAll('button')].filter(b=>getComputedStyle(b).display!=='none');
-  actions.classList.toggle('two',visible.length>1);
-}
-function showActivity(title,status,percent){
-  $('activity').classList.add('show');$('activity-title').textContent=title;$('activity-status').textContent=status;
-  const safePercent=Math.max(0,Math.min(100,Number(percent)||0));
-  $('activity-percent').textContent=Math.round(safePercent)+'%';$('activity-fill').style.width=safePercent+'%';
-  $('open-btn').style.display='none';$('cancel-btn').style.display='inline-flex';syncActivityButtons();
-}
+function startPlaylist(){clearMsg('playlist');const selected=playlist.filter(x=>x.mode!=='skip');if(!selected.length)return msg('playlist','error','Select at least one item.');try{playlist.filter(x=>x.mode==='trim').forEach(x=>validateRange(x.start,x.end))}catch(e){return msg('playlist','error',e.message)}const payload={title:playlistTitle,format:$('playlist-format').value,quality:$('playlist-quality').value,trim_mode:$('playlist-trim-mode').value,package_mode:$('playlist-package-mode').value,items:playlist.map(x=>({url:x.url,title:x.title,mode:x.mode,start:x.start||'',end:x.end||''}))};setBusy(true);showActivity('Playlist download',`Starting ${selected.length} item${selected.length===1?'':'s'}…`,0);AndroidApp.startPlaylist(JSON.stringify(payload))}
+function syncActivityButtons(){const actions=$('activity-actions'),visible=[...actions.querySelectorAll('button')].filter(b=>getComputedStyle(b).display!=='none');actions.classList.toggle('two',visible.length>1)}
+function showActivity(title,status,percent){$('activity').classList.add('show');$('activity-title').textContent=title;$('activity-status').textContent=status;const p=Math.max(0,Math.min(100,Number(percent)||0));$('activity-percent').textContent=Math.round(p)+'%';$('activity-fill').style.width=p+'%';$('open-btn').style.display='none';$('cancel-btn').style.display='inline-flex';syncActivityButtons()}
 function cancelJob(){AndroidApp.cancelCurrent()}
 function openDownloads(){AndroidApp.openDownloads()}
-function setEnginePill(readyState,status){
-  const el=$('engine'),text=String(status||'Engine');
-  el.classList.toggle('ready',!!readyState);el.classList.toggle('error',text.toLowerCase().includes('error'));
-  el.querySelector('.engine-text').textContent=text;
-  el.title=text;
-}
+function setEnginePill(readyState,status){const el=$('engine'),text=String(status||'Engine');el.classList.toggle('ready',!!readyState);el.classList.toggle('error',text.toLowerCase().includes('error'));el.querySelector('.engine-text').textContent=text;el.title=text}
 window.AndroidCallbacks={
-  onEngineState(data){ready=!!data.ready;setEnginePill(ready,data.status||'Engine');setBusy(busy)},
+  onEngineState(data){ready=!!data.ready;setEnginePill(ready,data.status||'Engine');setBusy(busy);maybeAutoPreloadPreset()},
   onSharedUrl(data){if(data&&data.url){$('single-url').value=data.url;switchPage('download');msg('download','info','Shared link received.')}},
-  onPlaylistLoaded(data){$('load-playlist').disabled=busy||!ready;playlistTitle=data.title||'Playlist';playlist=(data.items||[]).map(x=>({...x,mode:'full',start:'',end:''}));renderPlaylist();msg('playlist','info',`Loaded ${playlist.length} item${playlist.length===1?'':'s'}.`)},
-  onJobProgress(data){const scope=data.scope||'download',title=scope==='playlist'?'Playlist download':'Media download';let st=data.status||'Processing...';if(scope==='playlist'&&data.total)st=`${data.completed||0} of ${data.total} completed - ${st}`;showActivity(title,st,data.percent||0)},
+  onPlaylistLoaded(data){presetAutoLoading=false;if(playlistInspectBusy){playlistInspectBusy=false;setBusy(false)}const url=loadedPlaylistUrl||$('playlist-url').value.trim();applyPlaylist(data.title||'Playlist',data.items||[],url,true);if($('playlist').classList.contains('active'))msg('playlist','info',`Loaded ${playlist.length} item${playlist.length===1?'':'s'}.`)},
+  onJobProgress(data){const scope=data.scope||'download',title=scope==='playlist'?'Playlist download':'Media download';let st=data.status||'Processing…';if(scope==='playlist'&&data.total)st=`${data.completed||0} of ${data.total} completed · ${st}`;showActivity(title,st,data.percent||0)},
   onJobDone(data){busy=false;setBusy(false);showActivity(data.scope==='playlist'?'Playlist download':'Media download',data.message||'Saved',100);$('open-btn').style.display='inline-flex';$('cancel-btn').style.display='none';syncActivityButtons();msg(data.scope==='playlist'?'playlist':'download','info',data.message||'Download complete.')},
   onJobCancelled(){busy=false;setBusy(false);showActivity('Download','Cancelled',0);$('cancel-btn').style.display='none';syncActivityButtons()},
-  onNativeError(data){busy=false;setBusy(false);const scope=data.scope==='playlist'?'playlist':'download';msg(scope,'error',data.message||'Download failed.');showActivity(scope==='playlist'?'Playlist download':'Media download','Download failed',0);$('cancel-btn').style.display='none';syncActivityButtons()}
+  onNativeError(data){if(data.scope==='playlist'&&presetAutoLoading&&!playlistInspectBusy){presetAutoLoading=false;$('preset-meta').textContent='Tap to retry';return}busy=false;setBusy(false);playlistInspectBusy=false;const scope=data.scope==='playlist'?'playlist':'download';msg(scope,'error',data.message||'Download failed.');showActivity(scope==='playlist'?'Playlist download':'Media download','Download failed',0);$('cancel-btn').style.display='none';syncActivityButtons()}
 };
+function init(){
+  $('playlist-url').value=PRESET_PLAYLIST_URL;updatePresetCard();fillQuality('single');fillQuality('playlist');
+  const cached=readPresetCache();if(cached&&Array.isArray(cached.items)&&cached.items.length)applyPlaylist(cached.title||'Saved playlist',cached.items,PRESET_PLAYLIST_URL,false);
+  try{const last=localStorage.getItem(LAST_PAGE_KEY);if(last==='playlist'||last==='download')switchPage(last)}catch(e){}
+}
+init();
 </script>
 </body>
 </html>

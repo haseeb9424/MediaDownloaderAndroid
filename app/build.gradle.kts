@@ -10,8 +10,8 @@ android {
         applicationId = "com.haseeb.mediadownloader"
         minSdk = 24
         targetSdk = 35
-        versionCode = 7
-        versionName = "0.1.7-beta"
+        versionCode = 8
+        versionName = "0.1.8-beta"
 
         ndk {
             abiFilters += listOf("arm64-v8a")
@@ -61,4 +61,5 @@ dependencies {
 
     implementation("io.github.junkfood02.youtubedl-android:library:0.18.1")
     implementation("io.github.junkfood02.youtubedl-android:ffmpeg:0.18.1")
+    implementation("io.github.junkfood02.youtubedl-android:aria2c:0.18.1")
 }

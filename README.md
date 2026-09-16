@@ -1,22 +1,34 @@
-# Media Downloader Android v0.1.7 beta
+# Media Downloader Android v0.1.8 beta
 
-ARM64 Android build focused on faster startup and faster download/post-processing while retaining the phone-first v0.1.6 UI.
+Phone-first ARM64 Android downloader with a redesigned mobile UI, a pinned playlist workflow, and faster download/post-processing paths.
 
-## v0.1.7 speed improvements
+## v0.1.8 highlights
 
-- yt-dlp readiness no longer waits for FFmpeg initialization or an online updater check.
-- FFmpeg initializes in the background; a download only waits for it if media processing is actually needed before it is ready.
-- yt-dlp update checks are silent, non-blocking, and limited to once every 24 hours after a successful update.
-- Single downloads use up to 8 concurrent fragments; playlist items remain at 4 fragments each while two playlist files can download in parallel.
-- MP3 prefers an audio-only M4A source so video is not downloaded unnecessarily.
-- MP4 prefers native MP4 video + M4A audio so normal MP4 post-processing can usually be a fast stream merge instead of video re-encoding.
-- Fast trim remains the default; Precise trim remains available when frame-accurate cuts are required.
-- Progress text now identifies download, merge, MP3 conversion, trim, finalization, and saving stages more clearly.
-- Playlist output now defaults to **Save as folder**, avoiding the expensive mandatory ZIP pass.
-- Optional ZIP output is retained and uses no-compression ZIP packaging because MP3/MP4 files are already compressed.
-- Android Downloads copy buffers were increased to reduce file-save overhead.
-- Playlist folder output is saved under `Downloads/Media Downloader/<Playlist Name>`.
-- ARM64-only (`arm64-v8a`) packaging remains enabled.
+- Full mobile UI refresh with larger touch targets, cleaner cards, safer long-link handling, and clearer progress.
+- Native **Paste** buttons read the Android clipboard directly.
+- Pinned playlist preloaded in the app:
+  `https://youtube.com/playlist?list=PLUtowSKL77PM&si=-S-AgpEWXfbULz_7`
+- The pinned playlist is **automatically preloaded in the background** on first use. Its list is cached after the first successful load, so it reopens instantly on later launches. A refresh button fetches the latest playlist contents.
+- Playlist search, Keep all / Skip all, per-item Full / Trim / Skip controls, and sticky Download Selected action.
+- Added **M4A Fast Audio** mode. It keeps AAC/M4A directly when available, avoiding MP3 transcoding and reducing processing time.
+- 360p MP4 now prefers a combined MP4 stream when YouTube provides one, avoiding a separate audio download and merge.
+- Added the official optional **aria2c** component from youtubedl-android for accelerated full-file transfers. Single downloads use up to 8 aria2 connections; parallel playlist items use up to 4 each. If aria2c/CDN compatibility fails, the app retries once with yt-dlp’s native downloader.
+- Native yt-dlp fragmented downloads remain tuned to up to 12 concurrent fragments for single files and 6 per playlist item when aria2c is not used.
+- Normal playlist downloads can use up to 3 parallel item workers. Precise trims automatically fall back to one worker to avoid CPU contention.
+- Playlist **folder mode saves each file immediately as it finishes**, overlapping Android storage copy with the remaining downloads instead of doing one long saving stage at the end.
+- Larger Android storage copy buffers reduce final save overhead.
+- Folder mode remains the default. ZIP mode remains optional.
+- Fast trim remains the default; Precise trim remains available but can be much slower because exact cuts may require re-encoding.
+- yt-dlp startup remains non-blocking and updates remain silent/background maintenance.
+- ARM64-only (`arm64-v8a`) packaging is retained.
+
+## Performance tips
+
+For the fastest audio downloads, choose **M4A**. Choose MP3 only when you specifically need MP3 compatibility because MP3 requires an audio conversion step.
+
+For the fastest video path, 360p can often use a ready-made combined MP4 stream. Higher resolutions normally require separate video/audio streams followed by a fast FFmpeg merge. Full-file transfers use aria2c acceleration when it is available; trims stay on the yt-dlp/FFmpeg path for compatibility.
+
+Use **Fast** trim unless you need frame-accurate cut points. yt-dlp documents that forcing exact keyframes requires re-encoding and is much slower.
 
 ## Build
 

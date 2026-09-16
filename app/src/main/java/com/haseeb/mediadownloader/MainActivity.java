@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private final Set<String> activeProcessIds = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final AtomicBoolean engineReady = new AtomicBoolean(false);
     private final AtomicBoolean ffmpegReady = new AtomicBoolean(false);
+    private final AtomicBoolean aria2Ready = new AtomicBoolean(false);
     private final AtomicBoolean jobRunning = new AtomicBoolean(false);
     private final CountDownLatch ffmpegReadyLatch = new CountDownLatch(1);
     private volatile String ffmpegError = "";
@@ -181,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
                 sendEngineState();
 
                 ioExecutor.execute(this::initializeFfmpegInBackground);
+                ioExecutor.execute(this::initializeAria2InBackground);
                 ioExecutor.execute(this::maybeUpdateYoutubeDLInBackground);
             } catch (Exception e) {
                 engineReady.set(false);
@@ -199,6 +201,31 @@ public class MainActivity extends AppCompatActivity {
         } finally {
             ffmpegReadyLatch.countDown();
         }
+    }
+
+    private void initializeAria2InBackground() {
+        // Keep this optional and non-blocking. youtubedl-android ships aria2c as a
+        // separate module. Reflection avoids coupling the app to the helper class
+        // package while still letting the APK use libaria2c.so when available.
+        String[] candidates = new String[]{
+                "com.yausername.aria2c.Aria2c",
+                "com.yausername.youtubedl_android.Aria2c"
+        };
+        for (String className : candidates) {
+            try {
+                Class<?> type = Class.forName(className);
+                Object instance = type.getMethod("getInstance").invoke(null);
+                for (java.lang.reflect.Method method : type.getMethods()) {
+                    if (!"init".equals(method.getName()) || method.getParameterCount() != 1) continue;
+                    method.invoke(instance, getApplicationContext());
+                    aria2Ready.set(true);
+                    return;
+                }
+            } catch (Exception ignored) { }
+        }
+        // Native yt-dlp downloading remains the safe fallback if aria2c cannot
+        // initialize on a particular device/build.
+        aria2Ready.set(false);
     }
 
     private void maybeUpdateYoutubeDLInBackground() {
@@ -294,6 +321,20 @@ public class MainActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject();
             try { obj.put("status", "Cancelled"); } catch (Exception ignored) { }
             sendEvent("onJobCancelled", obj);
+        }
+
+        @JavascriptInterface
+        public String getClipboardText() {
+            try {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                if (clipboard == null || !clipboard.hasPrimaryClip() || clipboard.getPrimaryClip() == null ||
+                        clipboard.getPrimaryClip().getItemCount() == 0) return "";
+                CharSequence text = clipboard.getPrimaryClip().getItemAt(0).coerceToText(MainActivity.this);
+                return text == null ? "" : text.toString();
+            } catch (Exception ignored) {
+                return "";
+            }
         }
 
         @JavascriptInterface
@@ -412,11 +453,14 @@ public class MainActivity extends AppCompatActivity {
 
             String playlistTitle = payload.optString("title", "Playlist");
             String packageMode = payload.optString("package_mode", "folder");
+            final boolean zipMode = "zip".equalsIgnoreCase(packageMode);
+            final String playlistSubfolder = sanitizeFilename(playlistTitle);
             jobDir = createJobDir("playlist");
             File finalJobDir = jobDir;
             int total = selected.size();
             ConcurrentHashMap<Integer, Float> progresses = new ConcurrentHashMap<>();
             AtomicInteger completed = new AtomicInteger(0);
+            AtomicInteger savedCount = new AtomicInteger(0);
             List<File> successes = Collections.synchronizedList(new ArrayList<>());
             List<String> failures = Collections.synchronizedList(new ArrayList<>());
 
@@ -424,7 +468,19 @@ public class MainActivity extends AppCompatActivity {
             sendProgress("playlist", 0, "Starting " + total + " selected items…", 0, total);
             awaitFfmpegReady("playlist", total);
 
-            int workers = Math.max(1, Math.min(2, total));
+            boolean preciseTrimPresent = false;
+            if ("exact".equalsIgnoreCase(payload.optString("trim_mode", "fast"))) {
+                for (JSONObject item : selected) {
+                    if ("trim".equalsIgnoreCase(item.optString("mode", "full"))) {
+                        preciseTrimPresent = true;
+                        break;
+                    }
+                }
+            }
+            // Normal downloads can use three workers on modern ARM64 phones. Exact
+            // video trimming is CPU-heavy, so serialize it to avoid three FFmpeg
+            // encoders fighting for the same cores and becoming slower overall.
+            int workers = preciseTrimPresent ? 1 : Math.max(1, Math.min(3, total));
             playlistPool = Executors.newFixedThreadPool(workers);
             ExecutorCompletionService<Void> ecs = new ExecutorCompletionService<>(playlistPool);
 
@@ -444,7 +500,17 @@ public class MainActivity extends AppCompatActivity {
                             int done = completed.get();
                             sendProgress("playlist", overall, phase, done, total);
                         });
-                        if (result != null) successes.add(result);
+                        if (result != null) {
+                            if (zipMode) {
+                                successes.add(result);
+                            } else {
+                                progresses.put(itemIndex, 98f);
+                                sendProgress("playlist", Math.min(98, 90 + Math.round((completed.get() + 1f) / total * 8f)),
+                                        "Saving item " + (itemIndex + 1) + " to Downloads…", completed.get(), total);
+                                publishToDownloads(result, mimeFor(result), playlistSubfolder);
+                                savedCount.incrementAndGet();
+                            }
+                        }
                     } catch (Exception e) {
                         failures.add(item.optString("title", "Item " + (itemIndex + 1)) + ": " + safeMessage(e));
                     } finally {
@@ -465,18 +531,19 @@ public class MainActivity extends AppCompatActivity {
                 try { f.get(); } catch (Exception ignored) { }
             }
 
-            if (successes.isEmpty()) {
+            int successfulCount = zipMode ? successes.size() : savedCount.get();
+            if (successfulCount == 0) {
                 throw new IllegalStateException(failures.isEmpty() ? "No playlist items downloaded successfully." : failures.get(0));
             }
 
-            successes.sort(Comparator.comparing(File::getName));
             JSONObject done = new JSONObject();
             done.put("scope", "playlist");
-            done.put("completed", successes.size());
+            done.put("completed", successfulCount);
             done.put("total", total);
             done.put("failed", failures.size());
 
-            if ("zip".equalsIgnoreCase(packageMode)) {
+            if (zipMode) {
+                successes.sort(Comparator.comparing(File::getName));
                 sendProgress("playlist", 97, "Creating playlist ZIP…", completed.get(), total);
                 File zip = new File(jobDir, sanitizeFilename(playlistTitle) + ".zip");
                 createZip(zip, successes);
@@ -488,21 +555,11 @@ public class MainActivity extends AppCompatActivity {
                         ? "Playlist ZIP saved to Downloads/" + DOWNLOAD_FOLDER
                         : "ZIP saved with " + successes.size() + " files; " + failures.size() + " failed.");
             } else {
-                String subfolder = sanitizeFilename(playlistTitle);
-                Uri lastSaved = null;
-                for (int i = 0; i < successes.size(); i++) {
-                    File media = successes.get(i);
-                    int savePct = 96 + Math.min(3, Math.round(((i + 1f) / successes.size()) * 3f));
-                    sendProgress("playlist", savePct,
-                            "Saving file " + (i + 1) + " of " + successes.size() + "…",
-                            completed.get(), total);
-                    lastSaved = publishToDownloads(media, mimeFor(media), subfolder);
-                }
-                done.put("filename", subfolder);
-                done.put("uri", lastSaved == null ? "" : lastSaved.toString());
+                done.put("filename", playlistSubfolder);
+                done.put("uri", "");
                 done.put("message", failures.isEmpty()
-                        ? "Saved " + successes.size() + " files to Downloads/" + DOWNLOAD_FOLDER + "/" + subfolder
-                        : "Saved " + successes.size() + " files; " + failures.size() + " failed.");
+                        ? "Saved " + successfulCount + " files to Downloads/" + DOWNLOAD_FOLDER + "/" + playlistSubfolder
+                        : "Saved " + successfulCount + " files; " + failures.size() + " failed.");
             }
             sendEvent("onJobDone", done);
         } catch (Exception e) {
@@ -521,6 +578,12 @@ public class MainActivity extends AppCompatActivity {
 
     private File downloadItem(JSONObject commonPayload, String url, File outputDir,
                               int itemIndex, int total, String scope, ProgressRelay relay) throws Exception {
+        return downloadItem(commonPayload, url, outputDir, itemIndex, total, scope, relay, true);
+    }
+
+    private File downloadItem(JSONObject commonPayload, String url, File outputDir,
+                              int itemIndex, int total, String scope, ProgressRelay relay,
+                              boolean allowAria2) throws Exception {
         if (url == null || url.trim().isEmpty()) throw new IllegalArgumentException("Invalid media URL.");
         String processId = scope + "-" + itemIndex + "-" + UUID.randomUUID();
         activeProcessIds.add(processId);
@@ -532,7 +595,9 @@ public class MainActivity extends AppCompatActivity {
             request.addOption("--fragment-retries", "10");
             request.addOption("--extractor-retries", "3");
             request.addOption("--socket-timeout", "30");
-            request.addOption("--concurrent-fragments", "download".equals(scope) ? "8" : "4");
+            request.addOption("--concurrent-fragments", "download".equals(scope) ? "12" : "6");
+            request.addOption("--buffer-size", "1M");
+            request.addOption("--throttled-rate", "100K");
             request.addOption("--trim-filenames", "180");
             if ("download".equals(scope)) request.addOption("--no-playlist");
             request.addOption("-o", new File(outputDir, "%(title).140B [%(id)s].%(ext)s").getAbsolutePath());
@@ -544,22 +609,36 @@ public class MainActivity extends AppCompatActivity {
             String format = commonPayload.optString("format", "mp3");
             String quality = commonPayload.optString("quality", "192");
             if ("mp3".equalsIgnoreCase(format)) {
-                // Prefer an audio-only M4A source when available so the phone never
-                // downloads an unnecessary video stream before MP3 conversion.
+                // Download audio only. Prefer AAC/M4A as the input because it is widely
+                // available and avoids downloading a video stream before MP3 conversion.
                 request.addOption("-f", "bestaudio[ext=m4a]/bestaudio/best");
                 request.addOption("-x");
                 request.addOption("--audio-format", "mp3");
                 request.addOption("--audio-quality", quality + "K");
+            } else if ("m4a".equalsIgnoreCase(format)) {
+                // Fast audio path: when YouTube exposes M4A/AAC, FFmpeg can keep the
+                // existing audio instead of doing an MP3 transcode. The final fallback
+                // still converts to M4A so the user always receives the requested type.
+                request.addOption("-f", "bestaudio[ext=m4a]/bestaudio[acodec^=mp4a]/bestaudio");
+                request.addOption("-x");
+                request.addOption("--audio-format", "m4a");
+                request.addOption("--audio-quality", "0");
             } else {
                 String h = quality.matches("360|480|720|1080") ? quality : "";
-                // Prefer native MP4 video + M4A audio at the requested quality. These
-                // streams can normally be merged by FFmpeg with stream copy, avoiding
-                // expensive video re-encoding while preserving the user's quality choice.
-                String selector = h.isEmpty()
-                        ? "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b"
-                        : "bv*[ext=mp4][height<=" + h + "]+ba[ext=m4a]/" +
-                          "b[ext=mp4][height<=" + h + "]/" +
-                          "bv*[height<=" + h + "]+ba/b[height<=" + h + "]";
+                String selector;
+                if ("360".equals(h)) {
+                    // YouTube commonly has a combined 360p MP4 stream. Prefer it first
+                    // so many 360p downloads need neither a second audio transfer nor a merge.
+                    selector = "b[ext=mp4][height<=360]/" +
+                            "bv*[ext=mp4][height<=360]+ba[ext=m4a]/" +
+                            "bv*[height<=360]+ba/b[height<=360]";
+                } else if (h.isEmpty()) {
+                    selector = "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/bv*+ba/b";
+                } else {
+                    selector = "bv*[ext=mp4][height<=" + h + "]+ba[ext=m4a]/" +
+                            "b[ext=mp4][height<=" + h + "]/" +
+                            "bv*[height<=" + h + "]+ba/b[height<=" + h + "]";
+                }
                 request.addOption("-f", selector);
                 request.addOption("--merge-output-format", "mp4");
                 request.addOption("--remux-video", "mp4");
@@ -581,6 +660,18 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                 }
+            }
+
+            final boolean useAria2 = allowAria2 && aria2Ready.get() && "full".equals(mode);
+            if (useAria2) {
+                // aria2c opens multiple HTTP connections for full-file transfers.
+                // Keep the connection count moderate on phones and disable costly
+                // pre-allocation. Trim jobs intentionally stay on yt-dlp/FFmpeg.
+                request.addOption("--downloader", "libaria2c.so");
+                String ariaConnections = "download".equals(scope) ? "8" : "4";
+                request.addOption("--downloader-args",
+                        "aria2c:-x" + ariaConnections + " -s" + ariaConnections +
+                                " -k1M --file-allocation=none --summary-interval=1");
             }
 
             if ("trim".equals(mode) && (!start.isEmpty() || !end.isEmpty())) {
@@ -624,6 +715,16 @@ public class MainActivity extends AppCompatActivity {
             try {
                 YoutubeDL.getInstance().execute(request, processId, callback);
             } catch (Exception executeError) {
+                if (useAria2) {
+                    // Some signed/CDN URLs reject multi-connection fetching. Retry
+                    // once with yt-dlp's native downloader and continue any partial
+                    // transfer rather than failing the whole job.
+                    activeProcessIds.remove(processId);
+                    if (relay != null) relay.update(0f, "Retrying with compatibility mode…");
+                    if ("download".equals(scope))
+                        sendProgress(scope, 1, "Retrying with compatibility mode…", 0, 1);
+                    return downloadItem(commonPayload, url, outputDir, itemIndex, total, scope, relay, false);
+                }
                 String detail;
                 synchronized (recentOutput) { detail = recentOutput.toString().trim(); }
                 if (detail.length() > 1200) detail = detail.substring(detail.length() - 1200);
@@ -662,7 +763,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File findNewestMediaFile(File dir, String format) {
-        String expected = "mp3".equalsIgnoreCase(format) ? ".mp3" : ".mp4";
+        String expected = "mp3".equalsIgnoreCase(format) ? ".mp3" :
+                ("m4a".equalsIgnoreCase(format) ? ".m4a" : ".mp4");
         List<File> files = new ArrayList<>();
         collectFiles(dir, files);
         File newest = null;
@@ -700,9 +802,9 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
             if (uri == null) throw new IllegalStateException("Android could not create the Downloads file.");
             try (OutputStream os = resolver.openOutputStream(uri);
-                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(source), 4 * 1024 * 1024)) {
+                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(source), 8 * 1024 * 1024)) {
                 if (os == null) throw new IllegalStateException("Android could not open the Downloads destination.");
-                byte[] buffer = new byte[4 * 1024 * 1024];
+                byte[] buffer = new byte[8 * 1024 * 1024];
                 int read;
                 while ((read = in.read(buffer)) != -1) os.write(buffer, 0, read);
                 os.flush();
@@ -746,9 +848,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void copyFile(File source, File dest) throws Exception {
-        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(source), 4 * 1024 * 1024);
-             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dest), 4 * 1024 * 1024)) {
-            byte[] buffer = new byte[4 * 1024 * 1024];
+        try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(source), 8 * 1024 * 1024);
+             BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(dest), 8 * 1024 * 1024)) {
+            byte[] buffer = new byte[8 * 1024 * 1024];
             int read;
             while ((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
         }
@@ -823,13 +925,15 @@ public class MainActivity extends AppCompatActivity {
             return "Downloading…";
         }
         if (s.startsWith("[Merger]")) return "Merging audio & video…";
-        if (s.startsWith("[ExtractAudio]")) return "Converting audio to MP3…";
+        if (s.startsWith("[ExtractAudio]")) {
+            return "m4a".equalsIgnoreCase(format) ? "Preparing M4A audio…" : "Converting audio to MP3…";
+        }
         if (s.startsWith("[VideoRemuxer]")) return "Finalizing MP4…";
         if (s.startsWith("[Fixup") || s.startsWith("[Metadata]")) return "Finalizing media…";
         if (s.startsWith("[MoveFiles]")) return "Finalizing file…";
         if (lower.contains("deleting original file")) return "Cleaning temporary files…";
         if ("trim".equals(mode) && (lower.contains("ffmpeg") || lower.contains("section"))) return "Processing trim…";
-        if ("mp3".equalsIgnoreCase(format) && lower.contains("audio")) return "Processing audio…";
+        if (("mp3".equalsIgnoreCase(format) || "m4a".equalsIgnoreCase(format)) && lower.contains("audio")) return "Processing audio…";
         return simplifyStatus(s);
     }
 
@@ -847,6 +951,7 @@ public class MainActivity extends AppCompatActivity {
     private String mimeFor(File file) {
         String n = file.getName().toLowerCase(Locale.US);
         if (n.endsWith(".mp3")) return "audio/mpeg";
+        if (n.endsWith(".m4a")) return "audio/mp4";
         if (n.endsWith(".mp4")) return "video/mp4";
         if (n.endsWith(".zip")) return "application/zip";
         return "application/octet-stream";
