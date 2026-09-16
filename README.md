@@ -39,3 +39,7 @@ After a successful build, download `MediaDownloader-Android-arm64-beta.apk` from
 ## ABI
 
 This build intentionally contains only `arm64-v8a` native libraries and is intended for modern 64-bit Android phones.
+
+## GitHub Actions build fix
+
+The workflow now uses `android-actions/setup-android@v4` with `packages: ''` so the action does not request the retired Android SDK `tools` package. The workflow then installs only the packages this app actually needs: `platform-tools`, Android 35, and Build Tools 35.0.0.
